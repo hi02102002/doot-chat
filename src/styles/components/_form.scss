@@ -1,0 +1,8 @@
+.form-input {
+   @apply block py-2 px-4 appearance-none rounded border border-solid border-bs-gray-400 text-inherit text-sm border-focus outline-0 w-full;
+   font-family: inherit;
+}
+
+.form-label {
+   @apply font-medium;
+}

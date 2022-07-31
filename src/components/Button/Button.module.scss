@@ -1,0 +1,18 @@
+.btn {
+   @apply select-none flex items-center justify-center gap-2 border-solid border-transparent border text-body-color bg-transparent rounded px-4 py-2;
+   transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out,
+      border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+   &.primary {
+      background-color: rgba($color: #4eac6d, $alpha: 0.9);
+      border-color: rgba($color: #4eac6d, $alpha: 0.9);
+      @apply text-white;
+      &:disabled {
+         @apply bg-primary border-primary pointer-events-none opacity-60;
+      }
+      &:active,
+      &:focus,
+      &:hover {
+         @apply bg-primary border-primary;
+      }
+   }
+}

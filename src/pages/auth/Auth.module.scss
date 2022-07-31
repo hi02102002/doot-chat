@@ -1,0 +1,54 @@
+.auth {
+   @apply min-h-screen flex flex-col bg-primary;
+
+   .header {
+      @apply flex items-center px-4;
+   }
+
+   &-logo {
+      @apply text-3xl font-bold  text-white;
+   }
+
+   &-main {
+      @apply flex-1 px-4 w-full h-full flex items-center justify-center;
+
+      &-wrap {
+         @apply w-full mx-auto flex flex-col justify-center items-center max-w-[400px];
+      }
+   }
+
+   &-title {
+      @apply text-white text-2xl font-bold self-start mb-5;
+   }
+
+   &-content {
+      @apply bg-white p-6 rounded w-full shadow;
+   }
+
+   .btn-providers-group {
+      @apply gap-4 flex items-center justify-center;
+   }
+
+   .btn-provider {
+      @apply border-2 border-solid border-bs-gray-400 w-full min-h-[38px] text-base font-semibold  justify-center space-x-2;
+
+      svg {
+         @apply w-6 h-6;
+      }
+
+      &:hover:not([disabled]) {
+         @apply bg-[#eee];
+      }
+      &:active:not([disabled]) {
+         @apply scale-95;
+      }
+   }
+
+   &-form {
+      @apply space-y-4;
+   }
+
+   .error-msg {
+      @apply mt-2 text-sm  font-medium text-red;
+   }
+}

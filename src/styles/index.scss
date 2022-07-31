@@ -1,0 +1,59 @@
+@use 'tailwindcss/base';
+@use 'tailwindcss/components';
+@use 'tailwindcss/utilities';
+@use '../styles/components' as *;
+
+@layer utilities {
+   .border-focus {
+      &:focus {
+         border-color: #cfd4dd;
+      }
+   }
+}
+
+@layer base {
+   :root {
+      --bs-body-color: #495057;
+      --bs-body-bg: #fafafa;
+      --bs-blue: #4eac6d;
+      --bs-red: #ef476f;
+      --bs-orange: #fc814a;
+      --bs-yellow: #ffd166;
+      --bs-green: #06d6a0;
+      --bs-teal: #050505;
+      --bs-cyan: #50a5f1;
+      --bs-white: #fff;
+      --bs-gray: #797c8c;
+      --bs-gray-dark: #343a40;
+      --bs-gray-100: #f8f9fa;
+      --bs-gray-200: #f9f9f9;
+      --bs-gray-300: #f6f6f9;
+      --bs-gray-400: #e6ebf5;
+      --bs-gray-500: #adb5bd;
+      --bs-gray-600: #797c8c;
+      --bs-gray-700: #495057;
+      --bs-gray-800: #343a40;
+      --bs-gray-900: #212529;
+      --bs-primary: #4eac6d;
+      --bs-secondary: #797c8c;
+      --bs-success: #06d6a0;
+      --bs-info: #50a5f1;
+      --bs-warning: #ffd166;
+      --bs-danger: #ef476f;
+      --bs-purple: #6153cc;
+      --bs-pink: #e83e8c;
+      --bs-light: #f6f6f9;
+      --bs-indigo: #560bad;
+      --bs-dark: #343a40;
+      --bs-primary-rgb: 78, 172, 109;
+   }
+
+   html {
+      font-family: 'Cerebri Sans', sans-serif;
+      -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+   }
+
+   body {
+      @apply text-body-color bg-body-bg text-[.9375rem] leading-[1.5];
+   }
+}
