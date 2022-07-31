@@ -51,7 +51,7 @@ export const useLoginWithProvider = (auth: Auth, provider: AuthProvider) => {
       } finally {
          setLoading(false);
       }
-   }, [auth, provider]);
+   }, [auth, provider, toastCtx]);
 
    return {
       loading,
