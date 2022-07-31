@@ -1,7 +1,7 @@
 import { useAuth } from '@/hooks';
 import React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
-import { ROUTES } from '../../constants';
+import { ROUTES } from '../constants';
 
 const PrivateRoute: React.FC<{ children: JSX.Element }> = ({ children }) => {
    const auth = useAuth();

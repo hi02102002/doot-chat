@@ -1,6 +1,12 @@
 import { Button } from '@/components';
 import { ROUTES } from '@/constants';
-import { useAuth } from '@/hooks';
+import {
+   auth,
+   facebookProvider,
+   githubProvider,
+   googleProvider,
+} from '@/firebase';
+import { useAuth, useLoginWithProvider } from '@/hooks';
 import classNames from 'classnames/bind';
 import React from 'react';
 import { AiFillGithub } from 'react-icons/ai';
@@ -18,9 +24,15 @@ interface Props {
 }
 
 const AuthWrap = ({ children, title, contentNavigate }: Props) => {
-   const auth = useAuth();
+   const authCtx = useAuth();
+   const { loading: googleLoading, loginWithProvider: loginWithGoogle } =
+      useLoginWithProvider(auth, googleProvider);
+   const { loading: facebookLoading, loginWithProvider: loginWithFacebook } =
+      useLoginWithProvider(auth, facebookProvider);
+   const { loading: githubLoading, loginWithProvider: loginWithGithub } =
+      useLoginWithProvider(auth, githubProvider);
 
-   if (auth?.user) return <Navigate to={ROUTES.HOME} replace />;
+   if (authCtx?.user) return <Navigate to={ROUTES.HOME} replace />;
 
    return (
       <div className={`${cx('auth')} pb-6`}>
@@ -36,13 +48,31 @@ const AuthWrap = ({ children, title, contentNavigate }: Props) => {
                <h2 className={cx('auth-title')}>{title}</h2>
                <div className={cx('auth-content')}>
                   <div className={cx('btn-providers-group')}>
-                     <Button className={cx('btn-provider')}>
+                     <Button
+                        className={cx('btn-provider')}
+                        onClick={loginWithGoogle}
+                        isLoading={googleLoading}
+                        disabled={googleLoading}
+                        classNameSpiner={cx('spiner')}
+                     >
                         <FcGoogle />
                      </Button>
-                     <Button className={cx('btn-provider')}>
+                     <Button
+                        className={cx('btn-provider')}
+                        classNameSpiner={cx('spiner')}
+                        onClick={loginWithFacebook}
+                        isLoading={facebookLoading}
+                        disabled={facebookLoading}
+                     >
                         <BsFacebook className="text-[#046ce4]" />
                      </Button>
-                     <Button className={cx('btn-provider')}>
+                     <Button
+                        className={cx('btn-provider')}
+                        classNameSpiner={cx('spiner')}
+                        onClick={loginWithGithub}
+                        isLoading={githubLoading}
+                        disabled={githubLoading}
+                     >
                         <AiFillGithub className="text-[#42526e]" />
                      </Button>
                   </div>

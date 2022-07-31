@@ -1,0 +1,23 @@
+.toast-wrap {
+   @apply fixed top-4 left-[50%] translate-x-[-50%] z-[1000] w-full max-w-xs;
+
+   .list {
+      @apply flex gap-2 flex-col;
+   }
+}
+
+.toast-item {
+   @apply w-full p-4 rounded bg-bs-gray-100 shadow select-none;
+
+   &.success {
+      @apply bg-[#5fb759] text-white;
+   }
+
+   &.error {
+      @apply bg-danger text-white;
+   }
+
+   &.warning {
+      @apply bg-warning text-white;
+   }
+}

@@ -1,6 +1,13 @@
 import { db } from '@/firebase';
 import { IUser } from '@/types';
-import { doc, getDoc } from 'firebase/firestore';
+import {
+   collection,
+   doc,
+   getDoc,
+   getDocs,
+   query,
+   where,
+} from 'firebase/firestore';
 
 export const userServices = {
    getUserById: async (userId: string) => {
@@ -13,5 +20,16 @@ export const userServices = {
       }
 
       return userSnapshot.data() as IUser;
+   },
+   getUserByUsername: async (username: string) => {
+      const q = query(
+         collection(db, 'users'),
+         where('username', '==', username)
+      );
+      const querySnapshot = await getDocs(q);
+
+      return querySnapshot.docs.map((doc) => {
+         return doc.data() as IUser;
+      })?.[0];
    },
 };

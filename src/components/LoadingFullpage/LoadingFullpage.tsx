@@ -1,5 +1,4 @@
 import { AiOutlineMessage } from 'react-icons/ai';
-
 const LoadingFullpage = () => {
    return (
       <div className="min-h-screen flex items-center justify-center bg-primary px-4">

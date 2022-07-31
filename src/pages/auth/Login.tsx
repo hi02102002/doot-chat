@@ -1,15 +1,18 @@
 import { Button } from '@/components';
 import { ROUTES } from '@/constants';
 import { auth } from '@/firebase';
+import { useToast } from '@/hooks';
 import { yupResolver } from '@hookform/resolvers/yup';
 import classNames from 'classnames/bind';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import React, { useCallback, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
+import { v4 as uuid } from 'uuid';
 import * as yup from 'yup';
 import styles from './Auth.module.scss';
 import AuthWrap from './AuthWrap';
+
 const cx = classNames.bind(styles);
 
 interface IFormInputs {
@@ -30,7 +33,7 @@ const schema = yup.object().shape({
 
 const Login: React.FC = () => {
    const [loading, setLoading] = useState<boolean>(false);
-   const navigate = useNavigate();
+
    const {
       register,
       handleSubmit,
@@ -38,18 +41,31 @@ const Login: React.FC = () => {
    } = useForm<IFormInputs>({
       resolver: yupResolver(schema),
    });
+   const toastCtx = useToast();
+   const navigate = useNavigate();
 
-   const onSubmit = useCallback(async ({ email, password }: IFormInputs) => {
-      try {
-         setLoading(true);
-         await signInWithEmailAndPassword(auth, email, password);
-         setLoading(false);
-      } catch (error: any) {
-         setLoading(false);
-      } finally {
-         setLoading(false);
-      }
-   }, []);
+   const onSubmit = useCallback(
+      async ({ email, password }: IFormInputs) => {
+         try {
+            setLoading(true);
+            await signInWithEmailAndPassword(auth, email, password);
+            setLoading(false);
+            navigate(ROUTES.HOME, {
+               replace: true,
+            });
+            toastCtx?.addToast({
+               id: uuid(),
+               content: 'Register successfully.',
+               type: 'success',
+            });
+         } catch (error: any) {
+            setLoading(false);
+         } finally {
+            setLoading(false);
+         }
+      },
+      [toastCtx, navigate]
+   );
 
    return (
       <AuthWrap

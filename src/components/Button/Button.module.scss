@@ -1,5 +1,5 @@
 .btn {
-   @apply select-none flex items-center justify-center gap-2 border-solid border-transparent border text-body-color bg-transparent rounded px-4 py-2;
+   @apply select-none flex items-center justify-center gap-2 border-solid border-transparent border text-body-color bg-transparent rounded px-4 py-2 min-h-[42px];
    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out,
       border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
    &.primary {

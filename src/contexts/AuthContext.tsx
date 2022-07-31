@@ -1,7 +1,6 @@
 import { LoadingFullpage } from '@/components';
-import { ROUTES } from '@/constants';
 import { IAuthContext } from '@/types';
-import { onAuthStateChanged, signOut, User } from 'firebase/auth';
+import { onAuthStateChanged, User } from 'firebase/auth';
 import React, { createContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { auth } from 'src/firebase';
@@ -25,20 +24,16 @@ export const AuthProvider: React.FC<Props> = ({ children }) => {
             } else {
                setCurrentUser(null);
                setLoading(false);
-               signOut(auth);
-               navigate(ROUTES.LOGIN);
             }
          } catch (error) {
             setLoading(false);
-            signOut(auth);
             setCurrentUser(null);
-            navigate(ROUTES.LOGIN);
          }
       });
       return () => {
          subscribe();
       };
-   }, []);
+   }, [navigate]);
 
    return (
       <AuthContext.Provider

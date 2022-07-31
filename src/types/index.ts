@@ -1,12 +1,19 @@
 import { User } from 'firebase/auth';
-import { Timestamp } from 'firebase/firestore';
+import { FieldValue, Timestamp } from 'firebase/firestore';
 import React from 'react';
+
+export interface IToast {
+   id: string;
+   type: 'success' | 'error' | 'warning';
+   content: string;
+}
 
 export interface IRoute {
    link: string;
    component: React.FC;
    isPrivate: boolean;
    id: string;
+   children?: Array<IRoute>;
 }
 
 export type TMessage = 'FILE' | 'IMAGE' | 'AUDIO' | 'GIF' | 'TEXT';
@@ -19,6 +26,7 @@ export interface IUser {
    avatar?: string;
    bgCover?: string;
    bio: string;
+   createdAt: Timestamp | FieldValue;
 }
 
 export interface IMessageInput {
@@ -42,4 +50,10 @@ export interface IConversation {
 
 export interface IAuthContext {
    user: User | null;
+}
+
+export interface IToastContext {
+   toasts: Array<IToast>;
+   addToast: (toast: IToast) => void;
+   removeToast: (toastId: string) => void;
 }

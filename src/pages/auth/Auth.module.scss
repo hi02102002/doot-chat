@@ -51,4 +51,8 @@
    .error-msg {
       @apply mt-2 text-sm  font-medium text-red;
    }
+
+   .spiner {
+      @apply text-bs-gray-700 h-5 w-5;
+   }
 }
