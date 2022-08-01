@@ -32,7 +32,7 @@ const Button = forwardRef<HTMLButtonElement, Props>(
             }
             onClick && onClick(e);
          },
-         []
+         [onClick, rest.disabled]
       );
 
       return (
