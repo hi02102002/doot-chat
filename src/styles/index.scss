@@ -56,4 +56,8 @@
    body {
       @apply text-body-color bg-body-bg text-[.9375rem] leading-[1.5];
    }
+
+   img {
+      max-width: 100%;
+   }
 }

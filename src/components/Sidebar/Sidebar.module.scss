@@ -1,0 +1,34 @@
+.sidebar {
+   --paddingSidebar: 8px;
+   @apply max-w-[75px] min-w-[75px] px-[var(--paddingSidebar)] bg-gray-dark min-h-screen flex flex-col;
+
+   &-logo {
+      @apply h-[70px] flex items-center justify-center;
+   }
+
+   &-logo svg {
+      @apply fill-primary;
+   }
+
+   &-item {
+      --widthAfter: 4px;
+      @apply h-14 w-full flex items-center justify-center relative;
+
+      svg {
+         @apply w-7 h-7 text-[#878a92] transition-all;
+      }
+
+      &::after {
+         @apply content-[''] h-[calc(100%_/_2)] w-[var(--widthAfter)] bg-primary left-[calc(100%_+_var(--paddingSidebar)_-_var(--widthAfter))] absolute opacity-0 transition-all;
+      }
+
+      &.active,
+      &:hover {
+         svg {
+            @apply text-primary;
+         }
+
+         @apply after:opacity-100;
+      }
+   }
+}

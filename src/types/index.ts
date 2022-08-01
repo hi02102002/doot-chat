@@ -1,6 +1,7 @@
 import { User } from 'firebase/auth';
 import { FieldValue, Timestamp } from 'firebase/firestore';
 import React from 'react';
+import { IconType } from 'react-icons';
 
 export interface IToast {
    id: string;
@@ -17,6 +18,8 @@ export interface IRoute {
 }
 
 export type TMessage = 'FILE' | 'IMAGE' | 'AUDIO' | 'GIF' | 'TEXT';
+
+export type TTab = 'PROFILE' | 'CHATS' | 'SETTING';
 
 export interface IUser {
    username: string;
@@ -56,4 +59,22 @@ export interface IToastContext {
    toasts: Array<IToast>;
    addToast: (toast: IToast) => void;
    removeToast: (toastId: string) => void;
+}
+
+export interface ISidebar {
+   id: string;
+   name: string;
+   icon: IconType;
+   type: TTab;
+}
+
+export interface ITabContext {
+   currentTab: TTab;
+   chooseTab: (type: TTab) => void;
+}
+
+export interface ITab {
+   type: TTab;
+   component: () => JSX.Element;
+   id: string;
 }
