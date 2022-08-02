@@ -10,6 +10,8 @@ const Chat = () => {
 
    const { loading, messages } = useMessages(id as string, limit);
 
+   console.log(setLimit, loading, messages);
+
    useEffect(() => {
       chatServices
          .getConversation(id as string)
