@@ -22,8 +22,7 @@
          @apply content-[''] h-[calc(100%_/_2)] w-[var(--widthAfter)] bg-primary left-[calc(100%_+_var(--paddingSidebar)_-_var(--widthAfter))] absolute opacity-0 transition-all;
       }
 
-      &.active,
-      &:hover {
+      &.active {
          svg {
             @apply text-primary;
          }

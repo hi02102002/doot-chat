@@ -15,4 +15,13 @@
          @apply bg-primary border-primary;
       }
    }
+
+   &.sort-primary {
+      @apply bg-[#4eac6d1a] text-primary;
+      &:active,
+      &:focus,
+      &:hover {
+         @apply bg-primary border-primary text-white;
+      }
+   }
 }

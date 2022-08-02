@@ -1,6 +1,6 @@
 import { User } from 'firebase/auth';
 import { FieldValue, Timestamp } from 'firebase/firestore';
-import React from 'react';
+import React, { ButtonHTMLAttributes } from 'react';
 import { IconType } from 'react-icons';
 
 export interface IToast {
@@ -15,11 +15,14 @@ export interface IRoute {
    isPrivate: boolean;
    id: string;
    children?: Array<IRoute>;
+   layout?: boolean;
 }
 
 export type TMessage = 'FILE' | 'IMAGE' | 'AUDIO' | 'GIF' | 'TEXT';
 
 export type TTab = 'PROFILE' | 'CHATS' | 'SETTING';
+
+export type TConversation = 'GROUP' | '1-1';
 
 export interface IUser {
    username: string;
@@ -32,23 +35,23 @@ export interface IUser {
    createdAt: Timestamp | FieldValue;
 }
 
-export interface IMessageInput {
+export interface IMessage {
    content: string;
    id: string;
    type: TMessage;
-   createdAt: Timestamp;
+   createdAt: string;
    isUnsent: boolean;
    senderId: string;
-}
-
-export interface IMessage extends IMessageInput {
-   user: IUser;
 }
 
 export interface IConversation {
    lastMessage: IMessage | null;
    members: Array<string>; // array id member
    id: string;
+   type: TConversation;
+   createdAt: string;
+   conversationName: string;
+   conversationAvatar: string;
 }
 
 export interface IAuthContext {
@@ -73,8 +76,22 @@ export interface ITabContext {
    chooseTab: (type: TTab) => void;
 }
 
+export interface IChatContext {
+   conversations: Array<IConversation>;
+   currentConversation: IConversation | null | undefined;
+   selectConversation?: (conversation: IConversation) => void;
+   loading: boolean;
+}
+
 export interface ITab {
    type: TTab;
-   component: () => JSX.Element;
+   component: () => JSX.Element | null;
    id: string;
+}
+
+export interface PropsButton extends ButtonHTMLAttributes<HTMLButtonElement> {
+   children?: React.ReactNode;
+   isLoading?: boolean;
+   typeBtn?: '' | 'primary' | 'secondary' | 'sort-primary';
+   classNameSpiner?: string;
 }

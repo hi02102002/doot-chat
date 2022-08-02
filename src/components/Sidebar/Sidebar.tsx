@@ -1,5 +1,6 @@
 import { ROUTES, SIDEBAR } from '@/constants';
 import { useAuth, useTab } from '@/hooks';
+import Tippy from '@tippyjs/react';
 import classNames from 'classnames/bind';
 import { Link } from 'react-router-dom';
 import Avatar from '../Avatar';
@@ -29,16 +30,18 @@ const Sidebar = () => {
             {SIDEBAR.map((item) => {
                return (
                   <li key={item.id} className="my-2">
-                     <button
-                        className={cx('sidebar-item', {
-                           active: item.type === tabCtx?.currentTab,
-                        })}
-                        onClick={() => {
-                           tabCtx?.chooseTab(item.type);
-                        }}
-                     >
-                        <item.icon />
-                     </button>
+                     <Tippy content={item.name} placement="left">
+                        <button
+                           className={cx('sidebar-item', {
+                              active: item.type === tabCtx?.currentTab,
+                           })}
+                           onClick={() => {
+                              tabCtx?.chooseTab(item.type);
+                           }}
+                        >
+                           <item.icon />
+                        </button>
+                     </Tippy>
                   </li>
                );
             })}

@@ -1,6 +1,6 @@
 import { PrivateRoute, routes } from '@/routes';
 import { Route, Routes } from 'react-router-dom';
-import { ToastContainer } from './components';
+import { Layout, ToastContainer } from './components';
 
 const App = () => {
    return (
@@ -8,7 +8,21 @@ const App = () => {
          <ToastContainer />
          <Routes>
             {routes.map((route) => {
-               if (route.isPrivate) {
+               if (route.isPrivate && route.layout) {
+                  return (
+                     <Route
+                        path={route.link}
+                        element={
+                           <PrivateRoute>
+                              <Layout>
+                                 <route.component />
+                              </Layout>
+                           </PrivateRoute>
+                        }
+                        key={route.id}
+                     />
+                  );
+               } else if (route.isPrivate && !route.layout) {
                   return (
                      <Route
                         path={route.link}
@@ -16,6 +30,18 @@ const App = () => {
                            <PrivateRoute>
                               <route.component />
                            </PrivateRoute>
+                        }
+                        key={route.id}
+                     />
+                  );
+               } else if (!route.isPrivate && route.layout) {
+                  return (
+                     <Route
+                        path={route.link}
+                        element={
+                           <Layout>
+                              <route.component />
+                           </Layout>
                         }
                         key={route.id}
                      />

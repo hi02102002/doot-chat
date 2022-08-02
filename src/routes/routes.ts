@@ -1,5 +1,5 @@
 import { ROUTES } from '@/constants';
-import { Home, Login, Register } from '@/pages';
+import { Chat, Home, Login, Register } from '@/pages';
 import { IRoute } from '@/types';
 import { v4 as id } from 'uuid';
 export const routes: Array<IRoute> = [
@@ -8,6 +8,14 @@ export const routes: Array<IRoute> = [
       link: ROUTES.HOME,
       isPrivate: true,
       id: id(),
+      layout: true,
+   },
+   {
+      component: Chat,
+      id: id(),
+      isPrivate: true,
+      link: ROUTES.CHAT,
+      layout: true,
    },
    {
       component: Login,

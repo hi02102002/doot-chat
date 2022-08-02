@@ -1,0 +1,1 @@
+export { convertNameConversation } from './convertNameConversation';
