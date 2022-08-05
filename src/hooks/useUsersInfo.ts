@@ -13,21 +13,23 @@ export const useUsersInfo = (usersId: Array<string>) => {
 
    useEffect(() => {
       if (cache[key]) {
+         setUsers(cache[key]);
+         setLoading(false);
          return;
-      } else {
-         setLoading(true);
-         userServices
-            .getListUsersByListUserId(usersId)
-            .then((_users) => {
-               setUsers(_users);
-               cache[key] = _users;
-               setLoading(false);
-            })
-            .catch((error) => {
-               console.log(error);
-               setLoading(false);
-            });
       }
+
+      setLoading(true);
+      userServices
+         .getListUsersByListUserId(usersId)
+         .then((_users) => {
+            setUsers(_users);
+            cache[key] = _users;
+            setLoading(false);
+         })
+         .catch((error) => {
+            console.log(error);
+            setLoading(false);
+         });
    }, [usersId, key]);
 
    return { users, loading };

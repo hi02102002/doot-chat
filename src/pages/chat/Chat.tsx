@@ -1,16 +1,19 @@
-import { useChat, useMessages } from '@/hooks';
+import { useChat } from '@/hooks';
 import { chatServices } from '@/services';
-import { useEffect, useState } from 'react';
+import { IMessage } from '@/types';
+import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-
+import ChatView from './ChatView';
+import Header from './Header';
+import InputMessage from './InputMessage';
 const Chat = () => {
    const chatCtx = useChat();
    const { id } = useParams();
-   const [limit, setLimit] = useState<number>(10);
+   const [messageReply, setMessageReply] = useState<IMessage | null>(null);
 
-   const { loading, messages } = useMessages(id as string, limit);
-
-   console.log(setLimit, loading, messages);
+   const handleSelectMessageReply = (message: IMessage | null) => {
+      setMessageReply(message);
+   };
 
    useEffect(() => {
       chatServices
@@ -25,11 +28,22 @@ const Chat = () => {
       // eslint-disable-next-line react-hooks/exhaustive-deps
    }, [id]);
 
+   useEffect(() => {
+      document.title = 'Doot Chat | Message';
+   }, []);
+
    return (
-      <div>
-         <div></div>
+      <div className=" bg-[#f2f2f2] flex-1 max-w-[calc(100vw_-_75px_-_300px)] h-screen">
+         <div className="flex flex-col h-full relative">
+            <Header />
+            <ChatView onChooseMessage={handleSelectMessageReply} />
+            <InputMessage
+               messageReply={messageReply}
+               onChooseMessage={handleSelectMessageReply}
+            />
+         </div>
       </div>
    );
 };
 
-export default Chat;
+export default React.memo(Chat);

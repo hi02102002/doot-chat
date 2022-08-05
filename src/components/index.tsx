@@ -1,6 +1,7 @@
 export { default as Avatar } from './Avatar';
 export { default as Button } from './Button';
 export { default as Chat } from './Chat';
+export { Dropdown, DropdownItem } from './Dropdown';
 export { default as Layout } from './Layout';
 export { default as LoadingFullpage } from './LoadingFullpage';
 export { default as Modal } from './Modal';

@@ -9,6 +9,8 @@ export const useAllUser = (currentUserId: string) => {
 
    useEffect(() => {
       if (cache[currentUserId]) {
+         setLoading(false);
+         setUser(cache[currentUserId]);
          return;
       } else if (currentUserId) {
          setLoading(true);

@@ -8,7 +8,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import classNames from 'classnames/bind';
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { doc, serverTimestamp, setDoc } from 'firebase/firestore';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
 import { v4 as uuid } from 'uuid';
@@ -117,6 +117,10 @@ const Register: React.FC = () => {
       [toast]
    );
 
+   useEffect(() => {
+      document.title = 'Doot Chat | Register';
+   }, []);
+
    return (
       <AuthWrap
          title="Register"
@@ -132,7 +136,10 @@ const Register: React.FC = () => {
          }
       >
          <div>
-            <form className={cx('auth-form')} onSubmit={handleSubmit(onSubmit)}>
+            <form
+               className={cx('auth-form ')}
+               onSubmit={handleSubmit(onSubmit)}
+            >
                <div>
                   <label className="form-label     mb-2 block     ">
                      Email

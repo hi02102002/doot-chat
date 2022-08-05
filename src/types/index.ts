@@ -18,7 +18,7 @@ export interface IRoute {
    layout?: boolean;
 }
 
-export type TMessage = 'FILE' | 'IMAGE' | 'AUDIO' | 'GIF' | 'TEXT';
+export type TMessage = 'FILE' | 'IMAGE' | 'AUDIO' | 'TEXT' | 'VIDEO';
 
 export type TTab = 'PROFILE' | 'CHATS' | 'SETTING';
 
@@ -42,6 +42,8 @@ export interface IMessage {
    createdAt: string;
    isUnsent: boolean;
    senderId: string;
+   reply: IMessage | null;
+   nameFile?: string;
 }
 
 export interface IConversation {
@@ -79,7 +81,7 @@ export interface ITabContext {
 export interface IChatContext {
    conversations: Array<IConversation>;
    currentConversation: IConversation | null | undefined;
-   selectConversation?: (conversation: IConversation) => void;
+   selectConversation?: (conversation: IConversation | null) => void;
    loading: boolean;
 }
 

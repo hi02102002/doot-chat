@@ -8,7 +8,7 @@ import { IoClose } from 'react-icons/io5';
 import { useNavigate } from 'react-router-dom';
 import { v4 as uuid } from 'uuid';
 import Avatar from '../Avatar';
-import Modal from '../Modal';
+import Modal, { ModalContent, ModalFooter, ModalHeader } from '../Modal';
 import Spiner from '../Spiner';
 
 interface Props {
@@ -94,107 +94,109 @@ const ModalCreateConversation: React.FC<Props> = ({ onClose }) => {
    };
 
    return (
-      <Modal
-         onClose={onClose}
-         textOk="Create conversation"
-         propsButtonOk={{
-            disabled: chooseUsers.length === 0 || loadingCreate,
-            isLoading: loadingCreate,
-         }}
-         onOk={handleCreateConversation}
-      >
-         <div className="p-4 flex items-start gap-2">
-            <span className="font-semibold">To: </span>
-            {chooseUsers.length > 0 ? (
-               <ul className="flex gap-2 flex-wrap max-h-[108px] overflow-y-auto">
-                  {chooseUsers.map((user) => (
-                     <li key={user.id}>
-                        <div className="flex items-center gap-2 bg-primary rounded text-white p-1">
-                           <span>{user.username}</span>
-                           <button
+      <Modal>
+         <ModalContent onClose={onClose}>
+            <ModalHeader title="Create conversation" onClose={onClose} />
+            <div className="p-4 flex items-start gap-2">
+               <span className="font-semibold">To: </span>
+               {chooseUsers.length > 0 ? (
+                  <ul className="flex gap-2 flex-wrap max-h-[108px] overflow-y-auto">
+                     {chooseUsers.map((user) => (
+                        <li key={user.id}>
+                           <div className="flex items-center gap-2 bg-primary rounded text-white p-1">
+                              <span>{user.username}</span>
+                              <button
+                                 onClick={() => {
+                                    handleRemove(user.id);
+                                 }}
+                              >
+                                 <IoClose className="w-4 h-4" />
+                              </button>
+                           </div>
+                        </li>
+                     ))}
+                  </ul>
+               ) : (
+                  <span>Choose user to start conversation.</span>
+               )}
+            </div>
+            <div className="py-4 flex flex-col gap-4">
+               <h5 className="px-4 font-semibold ">Suggested</h5>
+               <ul className="max-h-[183px] min-h-[183px] overflow-y-auto flex flex-col">
+                  {loading ? (
+                     <div className="h-full flex-1 flex items-center justify-center">
+                        <Spiner className="text-primary w-6 h-6" />
+                     </div>
+                  ) : (
+                     users.map((user) => (
+                        <li key={user.id}>
+                           <div
+                              className="flex items-center justify-between px-4 py-2 cursor-pointer hover:bg-bs-gray-400 transition-all select-none"
                               onClick={() => {
-                                 handleRemove(user.id);
+                                 handleChoose(user);
                               }}
                            >
-                              <IoClose className="w-4 h-4" />
-                           </button>
-                        </div>
-                     </li>
-                  ))}
-               </ul>
-            ) : (
-               <span>Choose user to start conversation.</span>
-            )}
-         </div>
-         <div className="py-4 flex flex-col gap-4">
-            <h5 className="px-4 font-semibold ">Suggested</h5>
-            <ul className="max-h-[183px] min-h-[183px] overflow-y-auto flex flex-col">
-               {loading ? (
-                  <div className="h-full flex-1 flex items-center justify-center">
-                     <Spiner className="text-primary w-6 h-6" />
-                  </div>
-               ) : (
-                  users.map((user) => (
-                     <li key={user.id}>
-                        <div
-                           className="flex items-center justify-between px-4 py-2 cursor-pointer hover:bg-bs-gray-400 transition-all select-none"
-                           onClick={() => {
-                              handleChoose(user);
-                           }}
-                        >
-                           <div className="flex items-center gap-2">
-                              <Avatar
-                                 src={user.avatar}
-                                 style={{
-                                    width: 44,
-                                    height: 44,
-                                 }}
-                              />
-                              <div>
-                                 <h4>{user.username}</h4>
-                                 <span>{user.email}</span>
+                              <div className="flex items-center gap-2">
+                                 <Avatar
+                                    src={user.avatar}
+                                    style={{
+                                       width: 44,
+                                       height: 44,
+                                    }}
+                                 />
+                                 <div>
+                                    <h4>{user.username}</h4>
+                                    <span>{user.email}</span>
+                                 </div>
                               </div>
+                              <button>
+                                 {isChecked(user.id) ? (
+                                    <svg
+                                       aria-label="Toggle selection"
+                                       height="24"
+                                       role="img"
+                                       viewBox="0 0 24 24"
+                                       width="24"
+                                       className="text-primary fill-primary"
+                                    >
+                                       <path d="M12.001.504a11.5 11.5 0 1011.5 11.5 11.513 11.513 0 00-11.5-11.5zm5.706 9.21l-6.5 6.495a1 1 0 01-1.414-.001l-3.5-3.503a1 1 0 111.414-1.414l2.794 2.796L16.293 8.3a1 1 0 011.414 1.415z"></path>
+                                    </svg>
+                                 ) : (
+                                    <svg
+                                       aria-label="Toggle selection"
+                                       height="24"
+                                       role="img"
+                                       viewBox="0 0 24 24"
+                                       width="24"
+                                       className="fill-bs-gray-500 text-bs-gray-500"
+                                    >
+                                       <circle
+                                          cx="12.008"
+                                          cy="12"
+                                          fill="none"
+                                          r="11.25"
+                                          stroke="currentColor"
+                                          strokeLinejoin="round"
+                                          strokeWidth="1.5"
+                                       ></circle>
+                                    </svg>
+                                 )}
+                              </button>
                            </div>
-                           <button>
-                              {isChecked(user.id) ? (
-                                 <svg
-                                    aria-label="Toggle selection"
-                                    color="#0095f6"
-                                    fill="#0095f6"
-                                    height="24"
-                                    role="img"
-                                    viewBox="0 0 24 24"
-                                    width="24"
-                                 >
-                                    <path d="M12.001.504a11.5 11.5 0 1011.5 11.5 11.513 11.513 0 00-11.5-11.5zm5.706 9.21l-6.5 6.495a1 1 0 01-1.414-.001l-3.5-3.503a1 1 0 111.414-1.414l2.794 2.796L16.293 8.3a1 1 0 011.414 1.415z"></path>
-                                 </svg>
-                              ) : (
-                                 <svg
-                                    aria-label="Toggle selection"
-                                    height="24"
-                                    role="img"
-                                    viewBox="0 0 24 24"
-                                    width="24"
-                                    className="fill-bs-gray-500 text-bs-gray-500"
-                                 >
-                                    <circle
-                                       cx="12.008"
-                                       cy="12"
-                                       fill="none"
-                                       r="11.25"
-                                       stroke="currentColor"
-                                       strokeLinejoin="round"
-                                       strokeWidth="1.5"
-                                    ></circle>
-                                 </svg>
-                              )}
-                           </button>
-                        </div>
-                     </li>
-                  ))
-               )}
-            </ul>
-         </div>
+                        </li>
+                     ))
+                  )}
+               </ul>
+            </div>
+            <ModalFooter
+               onClose={onClose}
+               onOk={handleCreateConversation}
+               propsButtonOk={{
+                  disabled: chooseUsers.length === 0 || loadingCreate,
+                  isLoading: loadingCreate,
+               }}
+            />
+         </ModalContent>
       </Modal>
    );
 };

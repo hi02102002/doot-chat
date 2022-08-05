@@ -8,3 +8,4 @@ export { useTab } from './useTab';
 export { useToast } from './useToast';
 export { useUserInfo } from './useUserInfo';
 export { useUsersInfo } from './useUsersInfo';
+export { useBodyOverflow } from './useBodyOverflow';

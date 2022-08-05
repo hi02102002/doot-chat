@@ -1,0 +1,37 @@
+.message {
+   @apply flex items-end gap-4 mb-6;
+
+   .content {
+      @apply bg-white py-3 px-5 rounded mb-[10px] shadow-sm min-w-[270px] break-words  max-w-xl whitespace-pre-wrap;
+   }
+
+   .info {
+      @apply flex items-center gap-2;
+   }
+
+   &.right {
+      @apply flex-row-reverse;
+
+      .content {
+         background-color: rgba(var(--bs-primary-rgb), 0.23);
+         @apply self-end;
+      }
+
+      .info {
+         @apply flex-row-reverse;
+      }
+   }
+
+   .avatar {
+      @apply w-8 h-8;
+   }
+}
+
+.msg-reply {
+   @apply p-4 rounded border-l-2 border-primary flex items-center justify-between;
+   background-color: rgba(var(--bs-primary-rgb), 0.1);
+
+   h4 {
+      @apply text-primary text-base font-semibold;
+   }
+}

@@ -1,7 +1,7 @@
 import { useAuth, useChat, useUsersInfo } from '@/hooks';
 import { IConversation } from '@/types';
 import { convertNameConversation } from '@/utils';
-import { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import Skeleton from 'react-loading-skeleton';
 import { useNavigate } from 'react-router-dom';
 import Avatar from '../Avatar';
@@ -15,9 +15,9 @@ const Conversation: React.FC<Props> = ({ conversation }) => {
    const { users, loading } = useUsersInfo(conversation.members);
    const navigate = useNavigate();
 
-   const usersFiltered = users.filter(
-      (user) => (authCtx?.user?.uid as string) !== user.id
-   );
+   const usersFiltered = useMemo(() => {
+      return users.filter((user) => (authCtx?.user?.uid as string) !== user.id);
+   }, [authCtx?.user?.uid, users]);
 
    const handleChooseConversation = useCallback(() => {
       chatCtx?.selectConversation?.(conversation);
@@ -76,4 +76,4 @@ const Conversation: React.FC<Props> = ({ conversation }) => {
    );
 };
 
-export default Conversation;
+export default React.memo(Conversation);

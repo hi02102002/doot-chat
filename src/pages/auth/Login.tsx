@@ -5,7 +5,7 @@ import { useToast } from '@/hooks';
 import { yupResolver } from '@hookform/resolvers/yup';
 import classNames from 'classnames/bind';
 import { signInWithEmailAndPassword } from 'firebase/auth';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
 import { v4 as uuid } from 'uuid';
@@ -66,6 +66,10 @@ const Login: React.FC = () => {
       },
       [toastCtx, navigate]
    );
+
+   useEffect(() => {
+      document.title = 'Doot Chat | Login';
+   }, []);
 
    return (
       <AuthWrap

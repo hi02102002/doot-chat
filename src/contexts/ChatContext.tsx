@@ -25,7 +25,7 @@ export const ChatProvider: React.FC<Props> = ({ children }) => {
       useState<IConversation | null>(null);
    const [loading, setLoading] = useState<boolean>(true);
 
-   const handleSelectConversation = (conversation: IConversation) => {
+   const handleSelectConversation = (conversation: IConversation | null) => {
       setCurrentConversation(conversation);
    };
 

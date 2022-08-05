@@ -10,6 +10,8 @@ export const useUserInfo = (userId: string) => {
 
    useEffect(() => {
       if (cache[userId]) {
+         setUser(cache[userId]);
+         setLoading(false);
          return;
       } else {
          if (userId) {

@@ -1,4 +1,4 @@
-import { useChat } from '@/hooks';
+import { useBodyOverflow, useChat } from '@/hooks';
 import Tippy from '@tippyjs/react';
 import { AnimatePresence } from 'framer-motion';
 import { useState } from 'react';
@@ -20,6 +20,8 @@ const Chat = () => {
    const handleCloseModal = () => {
       setIsShowModalCreateConversation(false);
    };
+
+   useBodyOverflow(isShowModalCreateConversation);
 
    return (
       <div>
