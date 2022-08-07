@@ -6,28 +6,31 @@ const modalEl = document.querySelector('#modal') as HTMLDivElement;
 
 interface Props {
    children: React.ReactNode;
+   onClose?: () => void;
 }
 
-const ModalWrap: React.FC<Props> = ({ children }) => {
+const ModalWrap: React.FC<Props> = ({ children, onClose }) => {
    return createPortal(
-      <motion.div
-         className="fixed z-[999] w-full h-full overflow-x-hidden overflow-y-auto inset-0 bg-black/50"
-         initial={{
-            opacity: 0,
-         }}
-         animate={{
-            opacity: 1,
-         }}
-         exit={{
-            opacity: 0,
-         }}
-         transition={{
-            duration: 0.15,
-            ease: 'linear',
-         }}
-      >
+      <div className="fixed z-[999] w-full min-h-screen overflow-x-hidden overflow-y-auto inset-0 ">
+         <motion.div
+            className="bg-black/50 w-full min-h-screen  fixed inset-0"
+            initial={{
+               opacity: 0,
+            }}
+            animate={{
+               opacity: 1,
+            }}
+            exit={{
+               opacity: 0,
+            }}
+            transition={{
+               duration: 0.15,
+               ease: 'linear',
+            }}
+            onClick={onClose}
+         ></motion.div>
          {children}
-      </motion.div>,
+      </div>,
       modalEl
    );
 };

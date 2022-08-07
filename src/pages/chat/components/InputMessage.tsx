@@ -1,12 +1,11 @@
 import { Button } from '@/components';
-import { db, storage } from '@/firebase';
+import { db } from '@/firebase';
 import { useAuth, useUserInfo } from '@/hooks';
-import { IMessage } from '@/types';
-import { renderTypeReply } from '@/utils';
+import { IFile, IMessage } from '@/types';
+import { renderTypeReply, uploadImg } from '@/utils';
 import Tippy from '@tippyjs/react';
 import classNames from 'classnames/bind';
 import { doc, setDoc, updateDoc } from 'firebase/firestore';
-import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import ContentEditable from 'react-contenteditable';
 import { AiOutlineSend } from 'react-icons/ai';
@@ -14,18 +13,9 @@ import { BsEmojiSunglasses, BsFileEarmarkImage } from 'react-icons/bs';
 import { IoMdClose } from 'react-icons/io';
 import { useParams } from 'react-router-dom';
 import { v4 as uuid } from 'uuid';
-import styles from './chat.module.scss';
+import styles from '../chat.module.scss';
 
 const cx = classNames.bind(styles);
-
-const uploadImg = async (file: File, path: string) => {
-   const imgPostsRef = ref(storage, path);
-   const snapshot = await uploadBytes(imgPostsRef, file, {
-      contentType: file.type,
-   });
-   const url = await getDownloadURL(snapshot.ref);
-   return url;
-};
 
 interface Props {
    messageReply: IMessage | null;
@@ -73,6 +63,7 @@ const InputMessage: React.FC<Props> = ({ messageReply, onChooseMessage }) => {
          setTextMsgInput('');
          updateDoc(conversationRef, {
             lastMessage: newMessage,
+            usersRemoveConversation: [],
          });
       },
       [authCtx?.user?.uid, conversationId]
@@ -98,8 +89,19 @@ const InputMessage: React.FC<Props> = ({ messageReply, onChooseMessage }) => {
                   : file.type.includes('video')
                   ? 'VIDEO'
                   : 'FILE';
-
                handleSendMessage(url, type, null, file.name);
+               const fileRef = doc(
+                  db,
+                  `conversations/${conversationId}/files`,
+                  file.name
+               );
+               const fileToAdd: IFile = {
+                  id: file.name,
+                  name: file.name,
+                  url,
+                  type,
+               };
+               await setDoc(fileRef, fileToAdd);
                setLoadingSendFile(false);
             }
          } catch (error) {
@@ -156,12 +158,22 @@ const InputMessage: React.FC<Props> = ({ messageReply, onChooseMessage }) => {
                            inputFileRef.current?.click();
                         }}
                      >
-                        <BsFileEarmarkImage className="w-6 h-6 " />
+                        <BsFileEarmarkImage
+                           className="w-6 h-6 "
+                           style={{
+                              color: 'var(--theme-conversation-hex)',
+                           }}
+                        />
                      </button>
                   </Tippy>
                   <Tippy content="Emoji" placement="top">
                      <button className="w-11 h-11 flex items-center justify-center">
-                        <BsEmojiSunglasses className="w-6 h-6 " />
+                        <BsEmojiSunglasses
+                           className="w-6 h-6 "
+                           style={{
+                              color: 'var(--theme-conversation-hex)',
+                           }}
+                        />
                      </button>
                   </Tippy>
                </div>
@@ -180,7 +192,12 @@ const InputMessage: React.FC<Props> = ({ messageReply, onChooseMessage }) => {
                      dangerouslySetInnerHTML={{ __html: textMsgInput }}
                   />
                   {textMsgInput.length === 0 && (
-                     <span className="select-none absolute px-4 h-11 flex items-center top-0 left-0 z-0 ">
+                     <span
+                        className="select-none absolute px-4 h-11 flex items-center top-0 left-0 z-0 "
+                        style={{
+                           color: 'var(--theme-conversation-hex)',
+                        }}
+                     >
                         Aa...
                      </span>
                   )}
@@ -194,6 +211,10 @@ const InputMessage: React.FC<Props> = ({ messageReply, onChooseMessage }) => {
                   disabled={textMsgInput.length === 0 || loadingSendFile}
                   typeBtn="primary"
                   isLoading={loadingSendFile}
+                  style={{
+                     backgroundColor: 'var(--theme-conversation-hex)',
+                     borderColor: 'var(--theme-conversation-hex)',
+                  }}
                >
                   <AiOutlineSend className="w-6 h-6 " />
                </Button>

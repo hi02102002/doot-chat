@@ -59,6 +59,12 @@ const Login: React.FC = () => {
                type: 'success',
             });
          } catch (error: any) {
+            console.dir(error);
+            toastCtx?.addToast({
+               id: uuid(),
+               content: error.message,
+               type: 'error',
+            });
             setLoading(false);
          } finally {
             setLoading(false);

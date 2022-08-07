@@ -45,7 +45,7 @@ const Conversation: React.FC<Props> = ({ conversation }) => {
                         width: 32,
                         height: 32,
                      }}
-                     src={conversation.conversationAvatar}
+                     src={conversation.conversationAvatar.url}
                      alt=""
                      className="flex-shrink-0"
                   />

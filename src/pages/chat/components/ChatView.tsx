@@ -25,7 +25,12 @@ const ChatView: React.FC<Props> = ({ onChooseMessage }) => {
 
    return loading ? (
       <div className="!h-[calc(100vh_-_150px)] flex items-center justify-center">
-         <Spiner className="h-8 w-8 text-primary" />
+         <Spiner
+            className="h-8 w-8 "
+            style={{
+               color: 'var(--theme-conversation-hex)',
+            }}
+         />
       </div>
    ) : messages.length === 0 ? (
       <div className="!h-[calc(100vh_-_150px)] flex items-center justify-center">

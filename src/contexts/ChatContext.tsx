@@ -42,6 +42,12 @@ export const ChatProvider: React.FC<Props> = ({ children }) => {
                   const _conversation = doc.data() as IConversation;
                   return _conversation;
                })
+               .filter((conversation) => {
+                  const isDeleted = conversation.usersRemoveConversation.some(
+                     (_userId) => _userId === (authCtx.user?.uid as string)
+                  );
+                  return !isDeleted;
+               })
                .sort((a, b) => {
                   if (a.lastMessage?.createdAt && b.lastMessage?.createdAt) {
                      return b.lastMessage.createdAt.localeCompare(

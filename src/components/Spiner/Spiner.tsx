@@ -1,14 +1,21 @@
+import React from 'react';
+
 interface Props {
    className?: string;
+   style?: React.CSSProperties;
 }
 
-const Spiner: React.FC<Props> = ({ className = 'text-white h-5 w-5' }) => {
+const Spiner: React.FC<Props> = ({
+   className = 'text-white h-5 w-5',
+   style,
+}) => {
    return (
       <svg
          className={`animate-spin ${className}`}
          xmlns="http://www.w3.org/2000/svg"
          fill="none"
          viewBox="0 0 24 24"
+         style={style}
       >
          <circle
             className="opacity-25"

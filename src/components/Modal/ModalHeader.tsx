@@ -3,7 +3,7 @@ import { IoClose } from 'react-icons/io5';
 
 interface Props {
    title?: string;
-   onClose: () => void;
+   onClose?: () => void;
 }
 
 const ModalHeader: React.FC<Props> = ({ onClose, title }) => {

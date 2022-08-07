@@ -110,8 +110,14 @@ const Register: React.FC = () => {
                type: 'success',
             });
          } catch (error: any) {
+            console.dir(error);
+
             setLoading(false);
-            console.log(error);
+            toast?.addToast({
+               id: uuid(),
+               content: error.message,
+               type: 'error',
+            });
          }
       },
       [toast]
@@ -136,10 +142,7 @@ const Register: React.FC = () => {
          }
       >
          <div>
-            <form
-               className={cx('auth-form ')}
-               onSubmit={handleSubmit(onSubmit)}
-            >
+            <form className={cx('auth-form')} onSubmit={handleSubmit(onSubmit)}>
                <div>
                   <label className="form-label     mb-2 block     ">
                      Email
@@ -206,7 +209,7 @@ const Register: React.FC = () => {
                </div>
                <Button
                   typeBtn="primary"
-                  className="w-full"
+                  className="w-full "
                   type="submit"
                   isLoading={loading}
                   disabled={loading}

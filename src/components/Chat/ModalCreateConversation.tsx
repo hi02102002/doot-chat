@@ -1,3 +1,4 @@
+import { THEMES } from '@/constants';
 import { db } from '@/firebase';
 import { useAllUser, useAuth, useChat } from '@/hooks';
 import { chatServices } from '@/services';
@@ -75,7 +76,9 @@ const ModalCreateConversation: React.FC<Props> = ({ onClose }) => {
                members,
                type: members.length > 2 ? 'GROUP' : '1-1',
                conversationName: '',
-               conversationAvatar: '',
+               conversationAvatar: null,
+               theme: THEMES[0],
+               usersRemoveConversation: [],
             };
 
             await setDoc(

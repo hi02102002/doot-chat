@@ -15,11 +15,10 @@
    :root {
       --bs-body-color: #495057;
       --bs-body-bg: #fafafa;
-      --bs-blue: #4eac6d;
+      --bs-green: #4eac6d;
       --bs-red: #ef476f;
       --bs-orange: #fc814a;
       --bs-yellow: #ffd166;
-      --bs-green: #06d6a0;
       --bs-teal: #050505;
       --bs-cyan: #50a5f1;
       --bs-white: #fff;
@@ -46,6 +45,11 @@
       --bs-indigo: #560bad;
       --bs-dark: #343a40;
       --bs-primary-rgb: 78, 172, 109;
+      --bs-green-rgb: 78, 172, 109;
+      --bs-red-rgb: 239, 71, 111;
+      --bs-orange-rgb: 252, 129, 74;
+      --bs-yellow-rgb: 255, 209, 102;
+      --bs-cyan-rgb: 80, 165, 241;
    }
 
    html {

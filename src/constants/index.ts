@@ -1,10 +1,5 @@
-import { Chat, Profile, Setting } from '@/components';
-import { ISidebar, ITab } from '@/types';
-import {
-   AiOutlineMessage,
-   AiOutlineSetting,
-   AiOutlineUser,
-} from 'react-icons/ai';
+import { ISidebar, ITheme } from '@/types';
+import { AiOutlineMessage, AiOutlineUser } from 'react-icons/ai';
 import { v4 as uuid } from 'uuid';
 export const ROUTES = {
    HOME: '/',
@@ -32,28 +27,43 @@ export const SIDEBAR: Array<ISidebar> = [
       name: 'Chats',
       type: 'CHATS',
    },
-   {
-      icon: AiOutlineSetting,
-      id: uuid(),
-      name: 'Setting',
-      type: 'SETTING',
-   },
+   // {
+   //    icon: AiOutlineSetting,
+   //    id: uuid(),
+   //    name: 'Setting',
+   //    type: 'SETTING',
+   // },
 ];
 
-export const TABS: Array<ITab> = [
+export const THEMES: Array<ITheme> = [
    {
-      component: Profile,
       id: uuid(),
-      type: 'PROFILE',
+      colorHex: 'var(--bs-green)',
+      name: 'Green',
+      colorRgb: 'var(--bs-green-rgb)',
    },
    {
-      component: Chat,
       id: uuid(),
-      type: 'CHATS',
+      colorHex: 'var(--bs-red)',
+      name: 'Red',
+      colorRgb: 'var(--bs-red-rgb)',
    },
    {
-      component: Setting,
       id: uuid(),
-      type: 'SETTING',
+      colorHex: 'var(--bs-orange)',
+      name: 'Orange',
+      colorRgb: 'var(--bs-orange-rgb)',
+   },
+   {
+      id: uuid(),
+      name: 'Yellow',
+      colorHex: 'var(--bs-yellow)',
+      colorRgb: 'var(--bs-yellow-rgb)',
+   },
+   {
+      id: uuid(),
+      name: 'Cyan',
+      colorHex: 'var(--bs-cyan)',
+      colorRgb: 'var(--bs-cyan-rgb)',
    },
 ];

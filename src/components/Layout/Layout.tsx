@@ -4,7 +4,6 @@ import React from 'react';
 import { v4 as uuid } from 'uuid';
 import Chat from '../Chat';
 import Profile from '../Profile';
-import Setting from '../Setting';
 import Sidebar from '../Sidebar';
 
 interface Props {
@@ -22,18 +21,18 @@ const TABS: Array<ITab> = [
       id: uuid(),
       type: 'CHATS',
    },
-   {
-      component: Setting,
-      id: uuid(),
-      type: 'SETTING',
-   },
+   // {
+   //    component: Setting,
+   //    id: uuid(),
+   //    type: 'SETTING',
+   // },
 ];
 
 const Layout: React.FC<Props> = ({ children }) => {
    const tabCtx = useTab();
 
    return (
-      <div className="flex min-h-screen">
+      <div className="flex min-h-screen lg:flex-row flex-col-reverse">
          <Sidebar />
          <div className="min-w-[300px] max-w-[300px] shadow">
             {TABS.map((tab) => {

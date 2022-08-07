@@ -5,7 +5,7 @@ import { IMessage } from '@/types';
 import { renderTypeReply } from '@/utils';
 import Tippy from '@tippyjs/react/headless';
 import classNames from 'classnames/bind';
-import { doc, updateDoc } from 'firebase/firestore';
+import { deleteDoc, doc, updateDoc } from 'firebase/firestore';
 import { deleteObject, ref } from 'firebase/storage';
 import React, { useCallback, useMemo, useState } from 'react';
 import { AiOutlineDownload } from 'react-icons/ai';
@@ -14,7 +14,7 @@ import { BsFileEarmarkZip, BsFillReplyFill } from 'react-icons/bs';
 import Skeleton from 'react-loading-skeleton';
 import { useParams } from 'react-router-dom';
 import { v4 } from 'uuid';
-import styles from './chat.module.scss';
+import styles from '../chat.module.scss';
 
 const cx = classNames.bind(styles);
 
@@ -60,9 +60,19 @@ const Message: React.FC<Props> = ({ message, onChooseMessage }) => {
             case 'FILE':
                return (
                   <div className={cx('content')}>
-                     <div className="p-3 border-primary rounded border ">
+                     <div
+                        className="p-3  rounded border "
+                        style={{
+                           borderColor: 'var(--theme-conversation-hex)',
+                        }}
+                     >
                         <div className="flex items-center gap-4 justify-between">
-                           <BsFileEarmarkZip className="w-6 h-6 text-primary flex-shrink-0" />
+                           <BsFileEarmarkZip
+                              className="w-6 h-6 text-primary flex-shrink-0"
+                              style={{
+                                 color: 'var(--theme-conversation-hex)',
+                              }}
+                           />
                            <span className="font-semibold text-sm line-clamp-1 flex-1">
                               {message.nameFile}
                            </span>
@@ -72,7 +82,12 @@ const Message: React.FC<Props> = ({ message, onChooseMessage }) => {
                               target="_blank"
                               rel="noreferrer"
                            >
-                              <AiOutlineDownload className="w-6 h-6 text-primary flex-shrink-0" />
+                              <AiOutlineDownload
+                                 className="w-6 h-6 text-primary flex-shrink-0"
+                                 style={{
+                                    color: 'var(--theme-conversation-hex)',
+                                 }}
+                              />
                            </a>
                         </div>
                      </div>
@@ -120,6 +135,12 @@ const Message: React.FC<Props> = ({ message, onChooseMessage }) => {
             storage,
             `conversations/${conversationId}/messages/${message.nameFile}`
          );
+         const fileDocRef = doc(
+            db,
+            `conversations/${conversationId}/files/${message.nameFile}`
+         );
+
+         await deleteDoc(fileDocRef);
 
          deleteObject(fileRef)
             .then(() => {
@@ -180,7 +201,7 @@ const Message: React.FC<Props> = ({ message, onChooseMessage }) => {
       <div
          className={`${cx('message', {
             right: itMe,
-         })} group message-${message.id}`}
+         })} group message-${message.id} select-none`}
       >
          {loading ? (
             <Skeleton className={cx('avatar')} circle />

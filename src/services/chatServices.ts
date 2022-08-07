@@ -1,5 +1,5 @@
 import { db } from '@/firebase';
-import { IConversation } from '@/types';
+import { IConversation, IFile } from '@/types';
 import {
    collection,
    doc,
@@ -32,5 +32,13 @@ export const chatServices = {
       const conversationSnapshot = await getDoc(conversationRef);
 
       return conversationSnapshot.data() as IConversation;
+   },
+
+   async getConversationFiles(conversationId: string) {
+      const filesRef = collection(db, `conversations/${conversationId}/files`);
+      const filesSnapshot = await getDocs(filesRef);
+      return filesSnapshot.docs.map((doc) => {
+         return doc.data() as IFile;
+      });
    },
 };

@@ -53,7 +53,18 @@ export interface IConversation {
    type: TConversation;
    createdAt: string;
    conversationName: string;
-   conversationAvatar: string;
+   conversationAvatar: {
+      url: string;
+      nameFile: string;
+   } | null;
+   theme: ITheme;
+   usersRemoveConversation: Array<string>;
+}
+export interface ITheme {
+   id: string;
+   colorHex: string;
+   name: string;
+   colorRgb: string;
 }
 
 export interface IAuthContext {
@@ -96,4 +107,11 @@ export interface PropsButton extends ButtonHTMLAttributes<HTMLButtonElement> {
    isLoading?: boolean;
    typeBtn?: '' | 'primary' | 'secondary' | 'sort-primary';
    classNameSpiner?: string;
+}
+
+export interface IFile {
+   name: string;
+   type: TMessage;
+   id: string;
+   url: string;
 }

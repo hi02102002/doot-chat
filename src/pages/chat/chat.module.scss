@@ -13,8 +13,8 @@
       @apply flex-row-reverse;
 
       .content {
-         background-color: rgba(var(--bs-primary-rgb), 0.23);
-         @apply self-end;
+         background-color: rgba(var(--theme-conversation-rgb), 0.23);
+         @apply self-end bg-opacity-30;
       }
 
       .info {
@@ -28,10 +28,36 @@
 }
 
 .msg-reply {
-   @apply p-4 rounded border-l-2 border-primary flex items-center justify-between;
-   background-color: rgba(var(--bs-primary-rgb), 0.1);
+   @apply p-4 rounded border-l-2  flex items-center justify-between;
+   background-color: rgba(var(--theme-conversation-rgb), 0.1);
+   border-color: var(--theme-conversation-hex);
 
    h4 {
-      @apply text-primary text-base font-semibold;
+      @apply text-base font-semibold;
+      color: var(--theme-conversation-hex);
+   }
+}
+
+.accordion {
+   @apply text-base;
+
+   &-btn {
+      @apply flex items-center justify-between w-full p-4 rounded hover:bg-bs-gray-400 transition-all font-medium;
+
+      svg {
+         @apply w-5 h-5 transition-all;
+      }
+
+      &.active svg {
+         @apply rotate-180;
+      }
+   }
+
+   &-content {
+      @apply h-0 overflow-hidden transition-['height'] duration-300;
+
+      &.active {
+         @apply overflow-visible h-auto;
+      }
    }
 }
