@@ -1,3 +1,4 @@
+import { useView } from '@/hooks';
 import { ITabContext, TTab } from '@/types';
 import React, { createContext, useState } from 'react';
 
@@ -7,7 +8,10 @@ interface Props {
 export const TabContext = createContext<ITabContext | null>(null);
 
 export const TabProvider: React.FC<Props> = ({ children }) => {
-   const [currentTab, setCurrentTab] = useState<TTab>('CHATS');
+   const { width } = useView();
+   const [currentTab, setCurrentTab] = useState<TTab>(
+      width > 1024 ? 'CHATS' : ''
+   );
 
    const handleChooseTab = (type: TTab) => {
       setCurrentTab(type);

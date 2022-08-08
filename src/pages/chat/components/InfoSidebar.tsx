@@ -1,7 +1,8 @@
-import { Avatar, Modal, Spiner } from '@/components';
+import { Avatar, Button, Modal, Spiner } from '@/components';
 import { ROUTES, THEMES } from '@/constants';
 import { db, storage } from '@/firebase';
 import { useAuth, useChat, useConversationFiles, useUsersInfo } from '@/hooks';
+import { chatServices } from '@/services';
 import { IConversation, ITheme } from '@/types';
 import { convertNameConversation, uploadImg } from '@/utils';
 import classNames from 'classnames/bind';
@@ -9,7 +10,12 @@ import { arrayRemove, arrayUnion, doc, updateDoc } from 'firebase/firestore';
 import { deleteObject, ref } from 'firebase/storage';
 import { AnimatePresence, motion } from 'framer-motion';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { AiOutlineEdit, AiOutlineLogout, AiOutlineRest } from 'react-icons/ai';
+import {
+   AiOutlineEdit,
+   AiOutlineLogout,
+   AiOutlineRest,
+   AiOutlineUsergroupAdd,
+} from 'react-icons/ai';
 import {
    BsCheck2,
    BsFileEarmarkMusic,
@@ -23,6 +29,7 @@ import { RiNotificationBadgeLine } from 'react-icons/ri';
 import { TbMessageCircleOff } from 'react-icons/tb';
 import { useNavigate, useParams } from 'react-router-dom';
 import styles from '../chat.module.scss';
+import ModalAddMembers from './ModalAddMembers';
 import ModalChangeNameConversation from './ModalChangeNameConversation';
 const cx = classNames.bind(styles);
 
@@ -40,6 +47,8 @@ const InfoSidebar: React.FC<Props> = ({ onClose }) => {
    const { id: conversationId } = useParams();
    const { files, loading } = useConversationFiles(conversationId as string);
    const [showModalChangeNameConversation, setShowModalChangeNameConversation] =
+      useState<boolean>(false);
+   const [showModalAddMembers, setShowModalAddMembers] =
       useState<boolean>(false);
    const inputFileImgRef = useRef<HTMLInputElement | null>(null);
    const [loadingChangeAvatarConversation, setLoadingChangeAvatarConversation] =
@@ -97,23 +106,42 @@ const InfoSidebar: React.FC<Props> = ({ onClose }) => {
                   nameFile: file.name,
                },
             });
+
+            chatServices.addMessage(
+               `${authCtx?.user?.displayName} has changed avatar conversation.`,
+               null,
+               authCtx?.user?.uid as string,
+               conversationId as string,
+               'SYSTEM'
+            );
+
             setLoadingChangeAvatarConversation(false);
          }
       },
-      [conversationId, chatCtx, conversationRef]
+      [conversationId, chatCtx, conversationRef, authCtx]
    );
 
    const handleChangeThemeConversation = useCallback(
       async (theme: ITheme) => {
+         if (theme.name === chatCtx?.currentConversation?.theme.name) {
+            return;
+         }
          chatCtx?.selectConversation?.({
             ...(chatCtx.currentConversation as IConversation),
             theme,
          });
-         await updateDoc(conversationRef, {
+         updateDoc(conversationRef, {
             theme,
          });
+         chatServices.addMessage(
+            `${authCtx?.user?.displayName} has changed theme conversation to ${theme.name}.`,
+            null,
+            authCtx?.user?.uid as string,
+            conversationId as string,
+            'SYSTEM'
+         );
       },
-      [chatCtx, conversationRef]
+      [chatCtx, conversationRef, authCtx, conversationId]
    );
 
    const renderListFiles = useCallback(() => {
@@ -194,10 +222,17 @@ const InfoSidebar: React.FC<Props> = ({ onClose }) => {
       updateDoc(conversationRef, {
          members: arrayRemove(authCtx?.user?.uid as string),
       });
+      chatServices.addMessage(
+         `${authCtx?.user?.displayName} has left the group.`,
+         null,
+         authCtx?.user?.uid as string,
+         conversationId as string,
+         'SYSTEM'
+      );
       navigate(ROUTES.HOME, {
          replace: true,
       });
-   }, [authCtx, conversationRef, navigate]);
+   }, [authCtx, conversationRef, navigate, conversationId]);
 
    const handleRemoveConversation = useCallback(() => {
       updateDoc(conversationRef, {
@@ -407,6 +442,24 @@ const InfoSidebar: React.FC<Props> = ({ onClose }) => {
                                  );
                               })}
                            </ul>
+                           {usersFiltered.length > 1 && (
+                              <Button
+                                 className={cx('accordion-btn', 'my-4')}
+                                 typeBtn="primary"
+                                 style={{
+                                    backgroundColor:
+                                       'var(--theme-conversation-hex)',
+                                    borderColor:
+                                       'var(--theme-conversation-hex)',
+                                 }}
+                                 onClick={() => {
+                                    setShowModalAddMembers(true);
+                                 }}
+                              >
+                                 <span>Add members</span>
+                                 <AiOutlineUsergroupAdd />
+                              </Button>
+                           )}
                         </div>
                      </div>
                      <div>
@@ -461,13 +514,22 @@ const InfoSidebar: React.FC<Props> = ({ onClose }) => {
                               </li>
                               <li>
                                  {usersFiltered.length > 1 ? (
-                                    <button
-                                       className={cx('accordion-btn')}
-                                       onClick={handleLeaveGroup}
-                                    >
-                                       <span>Leave group</span>
-                                       <AiOutlineLogout />
-                                    </button>
+                                    <>
+                                       <button
+                                          className={cx('accordion-btn')}
+                                          onClick={handleLeaveGroup}
+                                       >
+                                          <span>Leave group</span>
+                                          <AiOutlineLogout />
+                                       </button>
+                                       <button
+                                          className={cx('accordion-btn')}
+                                          onClick={handleRemoveConversation}
+                                       >
+                                          <span>Remove conversation</span>
+                                          <AiOutlineRest />
+                                       </button>
+                                    </>
                                  ) : (
                                     <button
                                        className={cx('accordion-btn')}
@@ -487,6 +549,13 @@ const InfoSidebar: React.FC<Props> = ({ onClose }) => {
                         <ModalChangeNameConversation
                            onClose={() => {
                               setShowModalChangeNameConversation(false);
+                           }}
+                        />
+                     )}
+                     {showModalAddMembers && (
+                        <ModalAddMembers
+                           onClose={() => {
+                              setShowModalAddMembers(false);
                            }}
                         />
                      )}

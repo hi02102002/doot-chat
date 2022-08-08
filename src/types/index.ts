@@ -18,11 +18,13 @@ export interface IRoute {
    layout?: boolean;
 }
 
-export type TMessage = 'FILE' | 'IMAGE' | 'AUDIO' | 'TEXT' | 'VIDEO';
+export type TMessage = 'FILE' | 'IMAGE' | 'AUDIO' | 'TEXT' | 'VIDEO' | 'SYSTEM';
 
-export type TTab = 'PROFILE' | 'CHATS' | 'SETTING';
+export type TTab = 'PROFILE' | 'CHATS' | 'SETTING' | '';
 
 export type TConversation = 'GROUP' | '1-1';
+
+export type TICon = 'HAHA' | 'LIKE' | 'WOW' | 'HEART' | 'SAD' | 'ANGRY';
 
 export interface IUser {
    username: string;
@@ -33,6 +35,13 @@ export interface IUser {
    bgCover?: string;
    bio: string;
    createdAt: Timestamp | FieldValue;
+   keywords: Array<string>;
+}
+
+export interface IReact {
+   id: string;
+   userId: string;
+   icon: TICon;
 }
 
 export interface IMessage {
@@ -44,6 +53,7 @@ export interface IMessage {
    senderId: string;
    reply: IMessage | null;
    nameFile?: string;
+   reactions: Array<IReact>;
 }
 
 export interface IConversation {

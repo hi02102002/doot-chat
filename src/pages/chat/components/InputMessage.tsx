@@ -1,18 +1,18 @@
 import { Button } from '@/components';
 import { db } from '@/firebase';
 import { useAuth, useUserInfo } from '@/hooks';
+import { chatServices } from '@/services';
 import { IFile, IMessage } from '@/types';
 import { renderTypeReply, uploadImg } from '@/utils';
 import Tippy from '@tippyjs/react';
 import classNames from 'classnames/bind';
-import { doc, setDoc, updateDoc } from 'firebase/firestore';
+import { doc, setDoc } from 'firebase/firestore';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import ContentEditable from 'react-contenteditable';
 import { AiOutlineSend } from 'react-icons/ai';
 import { BsEmojiSunglasses, BsFileEarmarkImage } from 'react-icons/bs';
 import { IoMdClose } from 'react-icons/io';
 import { useParams } from 'react-router-dom';
-import { v4 as uuid } from 'uuid';
 import styles from '../chat.module.scss';
 
 const cx = classNames.bind(styles);
@@ -30,44 +30,19 @@ const InputMessage: React.FC<Props> = ({ messageReply, onChooseMessage }) => {
    const inputFileRef = useRef<HTMLInputElement | null>(null);
    const { user } = useUserInfo(messageReply?.senderId as string);
 
-   const handleSendMessage = useCallback(
-      async (
-         message: string,
-         type: IMessage['type'],
-         messageReply: IMessage | null = null,
-         nameFile = ''
-      ) => {
-         if (message.length === 0) return;
-         const idMessage = uuid();
-         const newMessage: IMessage = {
-            content: message,
-            createdAt: new Date().toISOString(),
-            id: idMessage,
-            isUnsent: false,
-            reply: messageReply,
-            senderId: authCtx?.user?.uid as string,
-            type: type,
-            nameFile,
-         };
-         const messagesRef = doc(
-            db,
-            `conversations/${conversationId}/messages`,
-            idMessage
-         );
-         const conversationRef = doc(
-            db,
-            `conversations`,
-            conversationId as string
-         );
-         setDoc(messagesRef, newMessage);
-         setTextMsgInput('');
-         updateDoc(conversationRef, {
-            lastMessage: newMessage,
-            usersRemoveConversation: [],
-         });
-      },
-      [authCtx?.user?.uid, conversationId]
-   );
+   const handleSendMessage = useCallback(() => {
+      if (textMsgInput.length === 0) return;
+      chatServices.addMessage(
+         textMsgInput,
+         messageReply,
+         authCtx?.user?.uid as string,
+         conversationId as string,
+         'TEXT',
+         () => {
+            setTextMsgInput('');
+         }
+      );
+   }, [authCtx?.user?.uid, conversationId, textMsgInput, messageReply]);
 
    const handleSendFile = useCallback(
       async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -89,7 +64,13 @@ const InputMessage: React.FC<Props> = ({ messageReply, onChooseMessage }) => {
                   : file.type.includes('video')
                   ? 'VIDEO'
                   : 'FILE';
-               handleSendMessage(url, type, null, file.name);
+               chatServices.addMessage(
+                  url,
+                  null,
+                  authCtx?.user?.uid as string,
+                  conversationId as string,
+                  type
+               );
                const fileRef = doc(
                   db,
                   `conversations/${conversationId}/files`,
@@ -108,7 +89,7 @@ const InputMessage: React.FC<Props> = ({ messageReply, onChooseMessage }) => {
             setLoadingSendFile(false);
          }
       },
-      [conversationId, handleSendMessage]
+      [conversationId, authCtx?.user?.uid]
    );
 
    useEffect(() => {
@@ -205,7 +186,7 @@ const InputMessage: React.FC<Props> = ({ messageReply, onChooseMessage }) => {
                <Button
                   className="!p-0 !w-11 !h-11 !min-h-0 flex-shrink-0 !rounded-full"
                   onClick={() => {
-                     handleSendMessage(textMsgInput, 'TEXT', messageReply);
+                     handleSendMessage();
                      onChooseMessage(null);
                   }}
                   disabled={textMsgInput.length === 0 || loadingSendFile}

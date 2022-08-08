@@ -5,6 +5,7 @@ import {
    doc,
    getDoc,
    getDocs,
+   limit,
    query,
    where,
 } from 'firebase/firestore';
@@ -41,8 +42,27 @@ export const userServices = {
       );
       return users.filter((user) => user !== undefined);
    },
-   async getAllUser(userId: string) {
+   async getUsers(userId: string) {
       const q = query(collection(db, 'users'));
+      const querySnapshot = await getDocs(q);
+      const users: Array<IUser> = [];
+
+      for (const doc of querySnapshot.docs) {
+         const user = doc.data() as IUser;
+
+         if (!(user.id === userId)) {
+            users.push(user);
+         }
+      }
+      return users;
+   },
+
+   async searchUsersByUsername(userId: string, username: string) {
+      const q = query(
+         collection(db, 'users'),
+         limit(10),
+         where('keywords', 'array-contains', username)
+      );
       const querySnapshot = await getDocs(q);
       const users: Array<IUser> = [];
 

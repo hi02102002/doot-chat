@@ -24,7 +24,7 @@ const ChatView: React.FC<Props> = ({ onChooseMessage }) => {
    }, [messages.slice(0, 1)?.[0]?.id || '']);
 
    return loading ? (
-      <div className="!h-[calc(100vh_-_150px)] flex items-center justify-center">
+      <div className="lg:!h-[calc(100vh_-_150px)] !h-[calc(100vh_-_225px)] flex items-center justify-center">
          <Spiner
             className="h-8 w-8 "
             style={{
@@ -33,12 +33,12 @@ const ChatView: React.FC<Props> = ({ onChooseMessage }) => {
          />
       </div>
    ) : messages.length === 0 ? (
-      <div className="!h-[calc(100vh_-_150px)] flex items-center justify-center">
+      <div className="lg:!h-[calc(100vh_-_150px)] !h-[calc(100vh_-_225px)] flex items-center justify-center">
          No message recent.
       </div>
    ) : (
       <div
-         className="!h-[calc(100vh_-_150px)] chat-feed pt-4 px-4"
+         className="lg:!h-[calc(100vh_-_150px)] !h-[calc(100vh_-_225px)] chat-feed pt-4 px-4"
          style={{
             overflow: 'auto',
             display: 'flex',

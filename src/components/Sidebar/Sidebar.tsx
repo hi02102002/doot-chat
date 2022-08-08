@@ -1,16 +1,20 @@
 import { ROUTES, SIDEBAR } from '@/constants';
-import { useAuth, useTab } from '@/hooks';
+import { auth } from '@/firebase';
+import { useChat, useTab, useView } from '@/hooks';
 import Tippy from '@tippyjs/react';
 import classNames from 'classnames/bind';
-import { Link } from 'react-router-dom';
-import Avatar from '../Avatar';
+import { signOut } from 'firebase/auth';
+import { AiOutlineLogout } from 'react-icons/ai';
+import { Link, useNavigate } from 'react-router-dom';
 import styles from './Sidebar.module.scss';
 
 const cx = classNames.bind(styles);
 
 const Sidebar = () => {
    const tabCtx = useTab();
-   const authCtx = useAuth();
+   const chatCtx = useChat();
+   const { width } = useView();
+   const navigate = useNavigate();
 
    return (
       <aside className={cx('sidebar')}>
@@ -26,10 +30,10 @@ const Sidebar = () => {
                </svg>
             </Link>
          </div>
-         <ul>
+         <ul className="flex items-center gap-4 lg:flex-col  lg:gap-0">
             {SIDEBAR.map((item) => {
                return (
-                  <li key={item.id} className="my-2">
+                  <li key={item.id} className="my-2 w-full">
                      <Tippy content={item.name} placement="left">
                         <button
                            className={cx('sidebar-item', {
@@ -37,6 +41,10 @@ const Sidebar = () => {
                            })}
                            onClick={() => {
                               tabCtx?.chooseTab(item.type);
+                              if (width < 1024) {
+                                 chatCtx?.selectConversation?.(null);
+                                 navigate(ROUTES.HOME);
+                              }
                            }}
                         >
                            <item.icon />
@@ -48,11 +56,16 @@ const Sidebar = () => {
          </ul>
          <div className="mt-auto flex items-center justify-center ">
             <div className="my-2">
-               <Avatar
-                  src={authCtx?.user?.photoURL as string}
-                  alt={authCtx?.user?.displayName as string}
-                  className="!w-9 !h-9"
-               />
+               <Tippy content="Log out" placement="left">
+                  <button
+                     className={cx('sidebar-item')}
+                     onClick={async () => {
+                        await signOut(auth);
+                     }}
+                  >
+                     <AiOutlineLogout />
+                  </button>
+               </Tippy>
             </div>
          </div>
       </aside>

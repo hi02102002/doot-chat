@@ -1,8 +1,12 @@
 import { PrivateRoute, routes } from '@/routes';
 import { Route, Routes } from 'react-router-dom';
 import { Layout, ToastContainer } from './components';
+import { generateKeywords } from './utils';
 
 const App = () => {
+   generateKeywords('asfasdf');
+   generateKeywords('Vo Hoang Huy');
+
    return (
       <div>
          <ToastContainer />

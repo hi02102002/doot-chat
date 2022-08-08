@@ -1,9 +1,11 @@
 import { Button } from '@/components';
-import { useChat } from '@/hooks';
+import { useChat, useTab, useView } from '@/hooks';
 import React, { useEffect } from 'react';
 
 const Home: React.FC = () => {
    const chatCtx = useChat();
+   const tabCtx = useTab();
+   const { width } = useView();
 
    useEffect(() => {
       chatCtx?.selectConversation?.(null);
@@ -13,7 +15,8 @@ const Home: React.FC = () => {
       document.title = 'Doot Chat | Home';
    }, []);
 
-   return (
+   return (tabCtx?.currentTab || chatCtx?.currentConversation) &&
+      width < 1024 ? null : (
       <div className="h-screen flex-1 flex flex-col justify-center items-center text-center gap-4">
          <Button
             typeBtn="sort-primary"

@@ -1,6 +1,7 @@
 import { Modal, ModalContent, ModalFooter, ModalHeader } from '@/components';
 import { db } from '@/firebase';
-import { useChat, useToast } from '@/hooks';
+import { useAuth, useChat, useToast } from '@/hooks';
+import { chatServices } from '@/services';
 import { IConversation } from '@/types';
 import { doc, updateDoc } from 'firebase/firestore';
 import React, { useCallback, useState } from 'react';
@@ -14,6 +15,7 @@ interface Props {
 const ModalChangeConversationName: React.FC<Props> = ({ onClose }) => {
    const chatCtx = useChat();
    const toastCtx = useToast();
+   const authCtx = useAuth();
    const [conversationName, setConversationName] = useState<string>(
       (chatCtx?.currentConversation?.conversationName as string) || ''
    );
@@ -39,6 +41,13 @@ const ModalChangeConversationName: React.FC<Props> = ({ onClose }) => {
             ...(chatCtx.currentConversation as IConversation),
             conversationName,
          });
+         chatServices.addMessage(
+            `${authCtx?.user?.displayName} has changed name conversation  to ${conversationName}`,
+            null,
+            authCtx?.user?.uid as string,
+            conversationId as string,
+            'SYSTEM'
+         );
          setConversationName('');
          toastCtx?.addToast({
             content: 'Change name conversation successfully.',
@@ -55,7 +64,7 @@ const ModalChangeConversationName: React.FC<Props> = ({ onClose }) => {
             type: 'error',
          });
       }
-   }, [conversationName, conversationId, toastCtx, chatCtx, onClose]);
+   }, [conversationName, conversationId, toastCtx, chatCtx, onClose, authCtx]);
 
    return (
       <Modal onClose={onClose}>

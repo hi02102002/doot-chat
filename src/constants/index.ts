@@ -1,6 +1,13 @@
-import { ISidebar, ITheme } from '@/types';
+import { ISidebar, ITheme, TICon } from '@/types';
 import { AiOutlineMessage, AiOutlineUser } from 'react-icons/ai';
 import { v4 as uuid } from 'uuid';
+import angry from '../assets/angry.png';
+import haha from '../assets/haha.png';
+import heart from '../assets/heart.png';
+import like from '../assets/like.png';
+import sad from '../assets/sad.png';
+import wow from '../assets/wow.png';
+
 export const ROUTES = {
    HOME: '/',
    LOGIN: '/login',
@@ -65,5 +72,51 @@ export const THEMES: Array<ITheme> = [
       name: 'Cyan',
       colorHex: 'var(--bs-cyan)',
       colorRgb: 'var(--bs-cyan-rgb)',
+   },
+];
+
+export const EMOJI_OBJ = {
+   haha,
+   heart,
+   like,
+   wow,
+   angry,
+   sad,
+};
+
+export const EMOJIS: Array<{
+   name: TICon;
+   id: string;
+   icon: string;
+}> = [
+   {
+      name: 'HEART',
+      id: uuid(),
+      icon: EMOJI_OBJ.heart,
+   },
+   {
+      name: 'WOW',
+      id: uuid(),
+      icon: EMOJI_OBJ.wow,
+   },
+   {
+      name: 'HAHA',
+      id: uuid(),
+      icon: EMOJI_OBJ.haha,
+   },
+   {
+      name: 'SAD',
+      id: uuid(),
+      icon: EMOJI_OBJ.sad,
+   },
+   {
+      name: 'ANGRY',
+      id: uuid(),
+      icon: EMOJI_OBJ.angry,
+   },
+   {
+      name: 'LIKE',
+      id: uuid(),
+      icon: EMOJI_OBJ.like,
    },
 ];

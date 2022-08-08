@@ -4,6 +4,7 @@ import { auth, db } from '@/firebase';
 import { useToast } from '@/hooks';
 import { userServices } from '@/services';
 import { IUser } from '@/types';
+import { generateKeywords } from '@/utils';
 import { yupResolver } from '@hookform/resolvers/yup';
 import classNames from 'classnames/bind';
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
@@ -95,6 +96,7 @@ const Register: React.FC = () => {
                avatar: avatarUrl,
                bgCover,
                createdAt: serverTimestamp(),
+               keywords: generateKeywords(username),
             };
 
             await updateProfile(user, {

@@ -1,6 +1,6 @@
-import { useTab } from '@/hooks';
+import { useChat, useTab, useView } from '@/hooks';
 import { ITab } from '@/types';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { v4 as uuid } from 'uuid';
 import Chat from '../Chat';
 import Profile from '../Profile';
@@ -30,17 +30,27 @@ const TABS: Array<ITab> = [
 
 const Layout: React.FC<Props> = ({ children }) => {
    const tabCtx = useTab();
+   const chatCtx = useChat();
+   const { width } = useView();
+
+   useEffect(() => {
+      if (chatCtx?.currentConversation && width < 1024) {
+         tabCtx?.chooseTab('');
+      }
+   }, [chatCtx, width, tabCtx]);
 
    return (
-      <div className="flex min-h-screen lg:flex-row flex-col-reverse">
+      <div className="flex min-h-screen lg:flex-row flex-col">
          <Sidebar />
-         <div className="min-w-[300px] max-w-[300px] shadow">
-            {TABS.map((tab) => {
-               return tab.type === tabCtx?.currentTab ? (
-                  <tab.component key={tab.id} />
-               ) : null;
-            })}
-         </div>
+         {tabCtx?.currentTab && (
+            <div className="lg:min-w-[300px] lg:max-w-[300px] shadow lg:h-[unset] h-[calc(100vh_-_75px)]">
+               {TABS.map((tab) => {
+                  return tab.type === tabCtx?.currentTab ? (
+                     <tab.component key={tab.id} />
+                  ) : null;
+               })}
+            </div>
+         )}
          <>{children}</>
       </div>
    );

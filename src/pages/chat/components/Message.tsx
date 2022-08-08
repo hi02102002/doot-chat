@@ -1,7 +1,8 @@
 import { Avatar, Dropdown, DropdownItem } from '@/components';
+import { EMOJIS, EMOJI_OBJ } from '@/constants';
 import { db, storage } from '@/firebase';
 import { useAuth, useToast, useUserInfo } from '@/hooks';
-import { IMessage } from '@/types';
+import { IMessage, IReact, TICon } from '@/types';
 import { renderTypeReply } from '@/utils';
 import Tippy from '@tippyjs/react/headless';
 import classNames from 'classnames/bind';
@@ -11,6 +12,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { AiOutlineDownload } from 'react-icons/ai';
 import { BiCopy, BiDotsVerticalRounded, BiHide } from 'react-icons/bi';
 import { BsFileEarmarkZip, BsFillReplyFill } from 'react-icons/bs';
+import { HiOutlineEmojiHappy } from 'react-icons/hi';
 import Skeleton from 'react-loading-skeleton';
 import { useParams } from 'react-router-dom';
 import { v4 } from 'uuid';
@@ -29,7 +31,7 @@ const Message: React.FC<Props> = ({ message, onChooseMessage }) => {
    const [showMore, setShowMore] = useState<boolean>(false);
    const { id: conversationId } = useParams();
    const toast = useToast();
-
+   const [showEmojis, setShowEmojis] = useState<boolean>(false);
    const itMe = useMemo(() => {
       return authCtx?.user?.uid === message.senderId;
    }, [authCtx?.user?.uid, message.senderId]);
@@ -164,6 +166,143 @@ const Message: React.FC<Props> = ({ message, onChooseMessage }) => {
       }
    }, [message.reply?.id]);
 
+   const handleReactionMessage = useCallback(
+      async (icon: TICon) => {
+         const messageRef = doc(
+            db,
+            `conversations/${conversationId}/messages/${message.id}`
+         );
+
+         const iconAlreadyExistWithUser = message.reactions.some(
+            (reaction) =>
+               reaction.icon === icon && reaction.userId === authCtx?.user?.uid
+         );
+         const diffIconWithUser = message.reactions.some(
+            (reaction) =>
+               reaction.userId === authCtx?.user?.uid && reaction.icon !== icon
+         );
+
+         if (iconAlreadyExistWithUser) {
+            console.log('iconAlreadyExistWithUser');
+            const newReactions: IMessage['reactions'] = [];
+
+            for (const reaction of message.reactions) {
+               if (
+                  reaction.icon === icon &&
+                  reaction.userId === authCtx?.user?.uid
+               ) {
+                  newReactions.push(reaction);
+               }
+            }
+
+            await updateDoc(messageRef, {
+               reactions: newReactions,
+            });
+            return;
+         }
+         if (diffIconWithUser) {
+            console.log('iconAlreadyExistWithUser');
+            await updateDoc(messageRef, {
+               reactions: message.reactions.map((reaction) => {
+                  if (reaction.userId === authCtx?.user?.uid) {
+                     return {
+                        ...reaction,
+                        icon,
+                     };
+                  }
+                  return reaction;
+               }),
+            });
+            return;
+         }
+
+         await updateDoc(messageRef, {
+            reactions: message.reactions.concat({
+               userId: authCtx?.user?.uid as string,
+               icon,
+               id: v4(),
+            }),
+         });
+      },
+      [conversationId, message, authCtx?.user?.uid]
+   );
+
+   const renderEmojisReacted = useCallback(() => {
+      const renderReaction = (reaction: IReact) => {
+         switch (reaction.icon) {
+            case 'ANGRY':
+               return (
+                  <img
+                     className="w-full h-full object-cover"
+                     src={EMOJI_OBJ.angry}
+                     alt=""
+                  />
+               );
+            case 'HAHA':
+               return (
+                  <img
+                     className="w-full h-full object-cover"
+                     src={EMOJI_OBJ.haha}
+                     alt=""
+                  />
+               );
+            case 'HEART':
+               return (
+                  <img
+                     className="w-full h-full object-cover"
+                     src={EMOJI_OBJ.heart}
+                     alt=""
+                  />
+               );
+            case 'LIKE':
+               return (
+                  <img
+                     className="w-full h-full object-cover"
+                     src={EMOJI_OBJ.like}
+                     alt=""
+                  />
+               );
+            case 'SAD':
+               return (
+                  <img
+                     className="w-full h-full object-cover"
+                     src={EMOJI_OBJ.sad}
+                     alt=""
+                  />
+               );
+            case 'WOW':
+               return (
+                  <img
+                     className="w-full h-full object-cover"
+                     src={EMOJI_OBJ.wow}
+                     alt=""
+                  />
+               );
+            default:
+               return null;
+         }
+      };
+
+      return (
+         message.reactions.length > 0 && (
+            <div className="absolute right-0 bottom-0 flex items-center gap-1 bg-white shadow px-2 py-1 rounded">
+               <span className="h-4 w-4 flex items-center justify-center">
+                  {message.reactions.length}
+               </span>
+               <ul className=" flex items-center gap-1">
+                  {message.reactions.slice(0, 3).map((item) => {
+                     return (
+                        <li key={item.id} className="w-4 h-4">
+                           {renderReaction(item)}
+                        </li>
+                     );
+                  })}
+               </ul>
+            </div>
+         )
+      );
+   }, [message]);
+
    const renderReplyMessage = useCallback(() => {
       if (message.reply) {
          return (
@@ -197,6 +336,10 @@ const Message: React.FC<Props> = ({ message, onChooseMessage }) => {
       handleScrollMessageReply,
    ]);
 
+   if (message.type === 'SYSTEM') {
+      return <p className="w-full text-center mb-4">{message.content}</p>;
+   }
+
    return (
       <div
          className={`${cx('message', {
@@ -213,7 +356,45 @@ const Message: React.FC<Props> = ({ message, onChooseMessage }) => {
             />
          )}
          <div className="flex flex-col ">
-            {renderReplyMessage()}
+            <Tippy
+               placement="top-end"
+               onClickOutside={() => {
+                  setShowEmojis(false);
+               }}
+               interactive={true}
+               visible={showEmojis}
+               render={(attrs) => {
+                  return (
+                     <ul
+                        tabIndex={-1}
+                        {...attrs}
+                        className="flex items-center gap-2 bg-white shadow p-2 rounded"
+                     >
+                        {EMOJIS.map((emoji) => (
+                           <li
+                              key={emoji.id}
+                              className="w-8 h-8 cursor-pointer"
+                              onClick={() => {
+                                 handleReactionMessage(emoji.name);
+                                 setShowEmojis(false);
+                              }}
+                           >
+                              <img
+                                 src={emoji.icon}
+                                 alt={emoji.name}
+                                 className="w-full h-full object-cover"
+                              />
+                           </li>
+                        ))}
+                     </ul>
+                  );
+               }}
+            >
+               <div className="relative">
+                  {renderEmojisReacted()}
+                  {renderReplyMessage()}
+               </div>
+            </Tippy>
             <div className={cx('info')}>
                <span className="font-base font-semibold text-black">
                   {user?.username}
@@ -231,51 +412,61 @@ const Message: React.FC<Props> = ({ message, onChooseMessage }) => {
             </div>
          </div>
          <div className="self-start opacity-0 group-hover:opacity-100 transition-all">
-            <Tippy
-               onClickOutside={() => {
-                  setShowMore(false);
-               }}
-               interactive={true}
-               visible={showMore}
-               render={(attrs) => (
-                  <div className="box" tabIndex={-1} {...attrs}>
-                     <Dropdown>
-                        <DropdownItem
-                           onClick={() => {
-                              onChooseMessage(message);
-                              setShowMore(false);
-                           }}
-                        >
-                           <span>Reply</span>
-                           <BsFillReplyFill className="w-4 h-4 flex-shrink-0 text-[#797c8c]" />
-                        </DropdownItem>
-                        {!message.isUnsent && message.type === 'TEXT' && (
-                           <DropdownItem onClick={handleCopyMessage}>
-                              <span>Copy</span>
-                              <BiCopy className="w-4 h-4 flex-shrink-0 text-[#797c8c]" />
+            <div className="flex items-center gap-2">
+               <Tippy
+                  onClickOutside={() => {
+                     setShowMore(false);
+                  }}
+                  interactive={true}
+                  visible={showMore}
+                  render={(attrs) => (
+                     <div className="box" tabIndex={-1} {...attrs}>
+                        <Dropdown>
+                           <DropdownItem
+                              onClick={() => {
+                                 onChooseMessage(message);
+                                 setShowMore(false);
+                              }}
+                           >
+                              <span>Reply</span>
+                              <BsFillReplyFill className="w-4 h-4 flex-shrink-0 text-[#797c8c]" />
                            </DropdownItem>
-                        )}
-
-                        {!message.isUnsent &&
-                           authCtx?.user?.uid === message.senderId && (
-                              <DropdownItem onClick={handelUnsent}>
-                                 <span>Unsent</span>
-                                 <BiHide className="w-4 h-4 flex-shrink-0 text-[#797c8c]" />
+                           {!message.isUnsent && message.type === 'TEXT' && (
+                              <DropdownItem onClick={handleCopyMessage}>
+                                 <span>Copy</span>
+                                 <BiCopy className="w-4 h-4 flex-shrink-0 text-[#797c8c]" />
                               </DropdownItem>
                            )}
-                     </Dropdown>
-                  </div>
-               )}
-            >
+
+                           {!message.isUnsent &&
+                              authCtx?.user?.uid === message.senderId && (
+                                 <DropdownItem onClick={handelUnsent}>
+                                    <span>Unsent</span>
+                                    <BiHide className="w-4 h-4 flex-shrink-0 text-[#797c8c]" />
+                                 </DropdownItem>
+                              )}
+                        </Dropdown>
+                     </div>
+                  )}
+               >
+                  <button
+                     className="w-8 h-8 flex items-center justify-center"
+                     onClick={() => {
+                        setShowMore(!showMore);
+                     }}
+                  >
+                     <BiDotsVerticalRounded className="w-5 h-5" />
+                  </button>
+               </Tippy>
                <button
                   className="w-8 h-8 flex items-center justify-center"
                   onClick={() => {
-                     setShowMore(!showMore);
+                     setShowEmojis(!showEmojis);
                   }}
                >
-                  <BiDotsVerticalRounded className="w-5 h-5" />
+                  <HiOutlineEmojiHappy className="w-5 h-5" />
                </button>
-            </Tippy>
+            </div>
          </div>
       </div>
    );

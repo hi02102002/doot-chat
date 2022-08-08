@@ -3,7 +3,7 @@ import { IUser } from '@/types';
 import { useEffect, useState } from 'react';
 
 const cache: { [key: string]: Array<IUser> } = {};
-export const useAllUser = (currentUserId: string) => {
+export const useUsers = (currentUserId: string) => {
    const [users, setUser] = useState<Array<IUser>>(cache[currentUserId] || []);
    const [loading, setLoading] = useState<boolean>(false);
 
@@ -15,7 +15,7 @@ export const useAllUser = (currentUserId: string) => {
       } else if (currentUserId) {
          setLoading(true);
          userServices
-            .getAllUser(currentUserId)
+            .getUsers(currentUserId)
             .then((_users) => {
                setUser(_users);
                cache[currentUserId] = _users;

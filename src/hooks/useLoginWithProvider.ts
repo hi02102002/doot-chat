@@ -1,6 +1,7 @@
 import { avatarUrl, bgCover } from '@/constants';
 import { db } from '@/firebase';
 import { IUser } from '@/types';
+import { generateKeywords } from '@/utils';
 import { Auth, AuthError, AuthProvider, signInWithPopup } from 'firebase/auth';
 import { doc, getDoc, serverTimestamp, setDoc } from 'firebase/firestore';
 import { useCallback, useState } from 'react';
@@ -34,6 +35,9 @@ export const useLoginWithProvider = (auth: Auth, provider: AuthProvider) => {
                avatar: user.photoURL || avatarUrl,
                bgCover: bgCover,
                createdAt: serverTimestamp(),
+               keywords: generateKeywords(
+                  (user.displayName as string).toLocaleLowerCase()
+               ),
             };
 
             await setDoc(doc(db, 'users', user.uid), newUser);
