@@ -53,7 +53,7 @@ const Layout: React.FC<Props> = ({ children }) => {
       <div className="flex min-h-screen lg:flex-row flex-col">
          <Sidebar />
          {tabCtx?.currentTab && (
-            <div className="lg:min-w-[300px] lg:max-w-[300px] shadow lg:h-[unset] h-screen pb-[75px]">
+            <div className="lg:min-w-[300px] lg:max-w-[300px] shadow lg:h-[unset] h-[calc(100vh_-_75px)]">
                {TABS.map((tab) => {
                   return tab.type === tabCtx?.currentTab ? (
                      <tab.component key={tab.id} />

@@ -1,6 +1,6 @@
 .sidebar {
    --paddingSidebar: 8px;
-   @apply lg:max-w-[75px] lg:min-w-[75px] px-[var(--paddingSidebar)] bg-gray-dark lg:min-h-screen flex lg:flex-col flex-row justify-center gap-4 lg:gap-0  min-h-[75px] max-h-[75px] fixed lg:static bottom-0 left-0 right-0;
+   @apply lg:max-w-[75px] lg:min-w-[75px] px-[var(--paddingSidebar)] bg-gray-dark lg:min-h-screen flex lg:flex-col flex-row justify-center gap-4 lg:gap-0  min-h-[75px] max-h-[75px];
 
    &-logo {
       @apply h-[70px] flex items-center justify-center lg:flex-col flex-row;
