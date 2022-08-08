@@ -89,9 +89,18 @@ const ModalAddMembers: React.FC<Props> = ({ onClose }) => {
             <ModalFooter
                onClose={onClose}
                onOk={handleAddMembers}
+               propsButtonCancel={{
+                  style: {
+                     color: 'var(--theme-conversation-hex)',
+                  },
+               }}
                propsButtonOk={{
                   disabled: chooseUsers.length === 0 || loadingAdd,
                   isLoading: loadingAdd,
+                  style: {
+                     backgroundColor: 'var(--theme-conversation-hex)',
+                     borderColor: 'var(--theme-conversation-hex)',
+                  },
                }}
             />
          </ModalContent>

@@ -90,6 +90,15 @@ const ModalChangeConversationName: React.FC<Props> = ({ onClose }) => {
                propsButtonOk={{
                   disabled: conversationName.trim().length === 0 || loading,
                   isLoading: loading,
+                  style: {
+                     backgroundColor: 'var(--theme-conversation-hex)',
+                     borderColor: 'var(--theme-conversation-hex)',
+                  },
+               }}
+               propsButtonCancel={{
+                  style: {
+                     color: 'var(--theme-conversation-hex)',
+                  },
                }}
                onOk={handleChangeConversationName}
             />

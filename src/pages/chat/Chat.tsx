@@ -31,7 +31,7 @@ const Chat = () => {
    }, [chatCtx?.currentConversation?.theme]);
 
    return (
-      <div className=" bg-[#f2f2f2] flex-1 lg:max-w-[calc(100vw_-_75px_-_300px)] lg:h-screen h-[calc(100vh_-_75px)]">
+      <div className=" bg-[#f2f2f2] flex-1 lg:max-w-[calc(100vw_-_75px_-_300px)] lg:h-screen pb-[75px] lg:pb-0">
          <div className="flex flex-col h-full relative">
             <Header />
             <ChatView onChooseMessage={handleSelectMessageReply} />

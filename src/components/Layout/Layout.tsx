@@ -37,13 +37,23 @@ const Layout: React.FC<Props> = ({ children }) => {
       if (chatCtx?.currentConversation && width < 1024) {
          tabCtx?.chooseTab('');
       }
-   }, [chatCtx, width, tabCtx]);
+
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+   }, [chatCtx, width]);
+
+   useEffect(() => {
+      if (width >= 1024) {
+         tabCtx?.chooseTab('CHATS');
+      }
+
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+   }, [width]);
 
    return (
       <div className="flex min-h-screen lg:flex-row flex-col">
          <Sidebar />
          {tabCtx?.currentTab && (
-            <div className="lg:min-w-[300px] lg:max-w-[300px] shadow lg:h-[unset] h-[calc(100vh_-_75px)]">
+            <div className="lg:min-w-[300px] lg:max-w-[300px] shadow lg:h-[unset] h-screen pb-[75px]">
                {TABS.map((tab) => {
                   return tab.type === tabCtx?.currentTab ? (
                      <tab.component key={tab.id} />

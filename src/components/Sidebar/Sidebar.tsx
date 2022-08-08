@@ -34,7 +34,10 @@ const Sidebar = () => {
             {SIDEBAR.map((item) => {
                return (
                   <li key={item.id} className="my-2 w-full">
-                     <Tippy content={item.name} placement="left">
+                     <Tippy
+                        content={item.name}
+                        placement={width < 1024 ? 'top' : 'right'}
+                     >
                         <button
                            className={cx('sidebar-item', {
                               active: item.type === tabCtx?.currentTab,
@@ -56,7 +59,10 @@ const Sidebar = () => {
          </ul>
          <div className="mt-auto flex items-center justify-center ">
             <div className="my-2">
-               <Tippy content="Log out" placement="left">
+               <Tippy
+                  content="Log out"
+                  placement={width < 1024 ? 'top' : 'right'}
+               >
                   <button
                      className={cx('sidebar-item')}
                      onClick={async () => {

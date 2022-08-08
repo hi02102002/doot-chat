@@ -24,7 +24,7 @@ import {
    BsFileImage,
 } from 'react-icons/bs';
 import { HiOutlineColorSwatch } from 'react-icons/hi';
-import { IoIosArrowDown } from 'react-icons/io';
+import { IoIosArrowDown, IoMdClose } from 'react-icons/io';
 import { RiNotificationBadgeLine } from 'react-icons/ri';
 import { TbMessageCircleOff } from 'react-icons/tb';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -276,8 +276,11 @@ const InfoSidebar: React.FC<Props> = ({ onClose }) => {
                      ease: 'linear',
                      duration: 0.15,
                   }}
-                  className=" min-w-[400px] max-w-[400px]  overflow-x-hidden   bg-white shadow p-6"
+                  className="w-full  md:min-w-[400px] md:max-w-[400px]  overflow-x-hidden   bg-white shadow p-6"
                >
+                  <button onClick={onClose}>
+                     <IoMdClose className="w-6 h-6" />
+                  </button>
                   <div className="flex flex-col items-center justify-center  gap-4 mb-6">
                      {usersFiltered.length > 1 ? (
                         chatCtx?.currentConversation?.conversationAvatar ? (

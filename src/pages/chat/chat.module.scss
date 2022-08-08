@@ -2,7 +2,7 @@
    @apply flex items-end gap-4 mb-6;
 
    .content {
-      @apply bg-white py-3 px-5 rounded mb-[10px] shadow-sm min-w-[270px] break-words  max-w-xl whitespace-pre-wrap;
+      @apply bg-white py-3 px-5 rounded mb-[10px] shadow-sm md:min-w-[270px] min-w-[200px]  break-words  md:max-w-xl whitespace-pre-wrap max-w-[15rem];
    }
 
    .info {
