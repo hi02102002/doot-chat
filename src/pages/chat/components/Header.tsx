@@ -38,7 +38,7 @@ const Header: React.FC = () => {
             <div className="flex items-center justify-between">
                <div className="flex items-center gap-2">
                   <button
-                     className="w-10 h-10  flex items-center justify-center md:hidden flex-shrink-0 "
+                     className="w-10 h-10  flex items-center justify-center  flex-shrink-0 md:hidden"
                      onClick={() => {
                         chatCtx?.selectConversation?.(null);
                         navigate(ROUTES.HOME);

@@ -1,4 +1,5 @@
 import { Button } from '@/components';
+import { BREAK_POINT } from '@/constants';
 import { useChat, useTab, useView } from '@/hooks';
 import React, { useEffect } from 'react';
 
@@ -9,14 +10,16 @@ const Home: React.FC = () => {
 
    useEffect(() => {
       chatCtx?.selectConversation?.(null);
-   }, [chatCtx]);
+
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+   }, []);
 
    useEffect(() => {
       document.title = 'Doot Chat | Home';
    }, []);
 
    return (tabCtx?.currentTab || chatCtx?.currentConversation) &&
-      width < 1024 ? null : (
+      width < BREAK_POINT.Desktops ? null : (
       <div className="h-screen flex-1 flex flex-col justify-center items-center text-center gap-4">
          <Button
             typeBtn="sort-primary"

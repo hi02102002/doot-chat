@@ -1,3 +1,4 @@
+import { BREAK_POINT } from '@/constants';
 import { useChat, useTab, useView } from '@/hooks';
 import { ITab } from '@/types';
 import React, { useEffect } from 'react';
@@ -34,7 +35,7 @@ const Layout: React.FC<Props> = ({ children }) => {
    const { width } = useView();
 
    useEffect(() => {
-      if (chatCtx?.currentConversation && width < 1024) {
+      if (chatCtx?.currentConversation && width < BREAK_POINT.Desktops) {
          tabCtx?.chooseTab('');
       }
 
@@ -42,7 +43,7 @@ const Layout: React.FC<Props> = ({ children }) => {
    }, [chatCtx, width]);
 
    useEffect(() => {
-      if (width >= 1024) {
+      if (width >= BREAK_POINT.Desktops) {
          tabCtx?.chooseTab('CHATS');
       }
 
@@ -53,7 +54,7 @@ const Layout: React.FC<Props> = ({ children }) => {
       <div className="flex min-h-screen lg:flex-row flex-col">
          <Sidebar />
          {tabCtx?.currentTab && (
-            <div className="lg:min-w-[300px] lg:max-w-[300px] shadow lg:h-[unset] h-[calc(100vh_-_75px)]">
+            <div className=" shadow  h-[calc(100vh_-_75px)] lg:min-w-[300px] lg:max-w-[300px] lg:h-[unset]">
                {TABS.map((tab) => {
                   return tab.type === tabCtx?.currentTab ? (
                      <tab.component key={tab.id} />

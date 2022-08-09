@@ -1,20 +1,21 @@
 import { Button } from '@/components';
+import { BREAK_POINT } from '@/constants';
 import { db } from '@/firebase';
-import { useAuth, useUserInfo } from '@/hooks';
+import { useAuth, useClickOutside, useUserInfo, useView } from '@/hooks';
 import { chatServices } from '@/services';
 import { IFile, IMessage } from '@/types';
 import { renderTypeReply, uploadImg } from '@/utils';
+import data from '@emoji-mart/data';
+import Picker from '@emoji-mart/react';
 import Tippy from '@tippyjs/react';
 import classNames from 'classnames/bind';
 import { doc, setDoc } from 'firebase/firestore';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import ContentEditable from 'react-contenteditable';
 import { AiOutlineSend } from 'react-icons/ai';
 import { BsEmojiSunglasses, BsFileEarmarkImage } from 'react-icons/bs';
 import { IoMdClose } from 'react-icons/io';
 import { useParams } from 'react-router-dom';
 import styles from '../chat.module.scss';
-
 const cx = classNames.bind(styles);
 
 interface Props {
@@ -29,6 +30,14 @@ const InputMessage: React.FC<Props> = ({ messageReply, onChooseMessage }) => {
    const [loadingSendFile, setLoadingSendFile] = useState<boolean>(false);
    const inputFileRef = useRef<HTMLInputElement | null>(null);
    const { user } = useUserInfo(messageReply?.senderId as string);
+   const [showEmoji, setShowEmoji] = useState<boolean>(false);
+   const inputMessageRef = useRef<HTMLInputElement | null>(null);
+   const { width } = useView();
+   const emojiWrapRef = useRef<HTMLDivElement | null>(null);
+   useClickOutside(emojiWrapRef, (e) => {
+      e.stopPropagation();
+      setShowEmoji(false);
+   });
 
    const handleSendMessage = useCallback(() => {
       if (textMsgInput.length === 0) return;
@@ -43,6 +52,21 @@ const InputMessage: React.FC<Props> = ({ messageReply, onChooseMessage }) => {
          }
       );
    }, [authCtx?.user?.uid, conversationId, textMsgInput, messageReply]);
+
+   const handleChooseEmoji = useCallback((emoji: any) => {
+      const valInput = inputMessageRef.current?.value as string;
+      const postionOfPointerInput = valInput.slice(
+         0,
+         inputMessageRef.current?.selectionStart as number
+      ).length;
+      setTextMsgInput((text) => {
+         return (
+            text.slice(0, postionOfPointerInput) +
+            emoji.native +
+            text.slice(postionOfPointerInput)
+         );
+      });
+   }, []);
 
    const handleSendFile = useCallback(
       async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -147,41 +171,52 @@ const InputMessage: React.FC<Props> = ({ messageReply, onChooseMessage }) => {
                         />
                      </button>
                   </Tippy>
-                  <Tippy content="Emoji" placement="top">
-                     <button className="w-11 h-11 flex items-center justify-center">
-                        <BsEmojiSunglasses
-                           className="w-6 h-6 "
-                           style={{
-                              color: 'var(--theme-conversation-hex)',
+                  <div className="relative" ref={emojiWrapRef}>
+                     {showEmoji && (
+                        <div className="absolute bottom-[50px] left-[-50px] translate-x-0 lg:left-[50%] lg:translate-x-[-50%] z-[100] shadow ">
+                           <Picker
+                              data={data}
+                              onEmojiSelect={handleChooseEmoji}
+                              theme="light"
+                              perLine={width >= BREAK_POINT.Desktops ? 9 : 6}
+                              previewPosition="none"
+                           />
+                        </div>
+                     )}
+                     <Tippy placement="top" content="Emoji">
+                        <button
+                           className="w-11 h-11 flex items-center justify-center"
+                           onClick={() => {
+                              setShowEmoji(!showEmoji);
                            }}
-                        />
-                     </button>
-                  </Tippy>
+                        >
+                           <BsEmojiSunglasses
+                              className="w-6 h-6 "
+                              style={{
+                                 color: 'var(--theme-conversation-hex)',
+                              }}
+                           />
+                        </button>
+                     </Tippy>
+                  </div>
                </div>
                <div className="w-full relative bg-body-bg">
-                  <ContentEditable
-                     html={textMsgInput}
+                  <input
+                     type="text"
+                     className="form-input !py-[11px]  relative z-[1]   max-h-[78px] overflow-y-auto whitespace-pre-wrap placeholder:text-[var(--them-conversation-hex)]"
+                     placeholder="Aa.."
                      onChange={(e) => {
                         setTextMsgInput(e.target.value);
                      }}
-                     className="form-input !py-[11px]  relative z-[1]   max-h-[78px] overflow-y-auto whitespace-pre-wrap"
                      onKeyDown={(e) => {
                         if (e.key === 'Enter') {
                            e.preventDefault();
+                           handleSendMessage();
                         }
                      }}
-                     dangerouslySetInnerHTML={{ __html: textMsgInput }}
+                     value={textMsgInput}
+                     ref={inputMessageRef}
                   />
-                  {textMsgInput.length === 0 && (
-                     <span
-                        className="select-none absolute px-4 h-11 flex items-center top-0 left-0 z-0 "
-                        style={{
-                           color: 'var(--theme-conversation-hex)',
-                        }}
-                     >
-                        Aa...
-                     </span>
-                  )}
                </div>
                <Button
                   className="!p-0 !w-11 !h-11 !min-h-0 flex-shrink-0 !rounded-full"

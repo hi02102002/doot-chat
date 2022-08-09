@@ -177,7 +177,11 @@ const InfoSidebar: React.FC<Props> = ({ onClose }) => {
                               className="h-full w-full flex items-center justify-center"
                               title={file.name}
                            >
-                              <img src={file.url} alt={file.name} />
+                              <img
+                                 src={file.url}
+                                 alt={file.name}
+                                 className="h-full w-full object-cover"
+                              />
                            </div>
                         </a>
                      ) : file.type === 'VIDEO' ? (
@@ -276,7 +280,7 @@ const InfoSidebar: React.FC<Props> = ({ onClose }) => {
                      ease: 'linear',
                      duration: 0.15,
                   }}
-                  className="w-full  md:min-w-[400px] md:max-w-[400px]  overflow-x-hidden   bg-white shadow p-6"
+                  className="w-full    overflow-x-hidden   bg-white shadow p-6 md:min-w-[400px] md:max-w-[400px]"
                >
                   <button onClick={onClose}>
                      <IoMdClose className="w-6 h-6" />

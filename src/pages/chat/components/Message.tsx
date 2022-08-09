@@ -1,13 +1,14 @@
 import { Avatar, Dropdown, DropdownItem } from '@/components';
-import { EMOJIS, EMOJI_OBJ } from '@/constants';
+import { EMOJIS } from '@/constants';
 import { db, storage } from '@/firebase';
 import { useAuth, useToast, useUserInfo } from '@/hooks';
-import { IMessage, IReact, TICon } from '@/types';
-import { renderTypeReply } from '@/utils';
+import { IMessage, TICon } from '@/types';
+import { renderReaction, renderTypeReply } from '@/utils';
 import Tippy from '@tippyjs/react/headless';
 import classNames from 'classnames/bind';
 import { deleteDoc, doc, updateDoc } from 'firebase/firestore';
 import { deleteObject, ref } from 'firebase/storage';
+import { AnimatePresence } from 'framer-motion';
 import React, { useCallback, useMemo, useState } from 'react';
 import { AiOutlineDownload } from 'react-icons/ai';
 import { BiCopy, BiDotsVerticalRounded, BiHide } from 'react-icons/bi';
@@ -17,6 +18,7 @@ import Skeleton from 'react-loading-skeleton';
 import { useParams } from 'react-router-dom';
 import { v4 } from 'uuid';
 import styles from '../chat.module.scss';
+import ModalSeeUserReaction from './ModalSeeUserReaction';
 
 const cx = classNames.bind(styles);
 
@@ -32,6 +34,8 @@ const Message: React.FC<Props> = ({ message, onChooseMessage }) => {
    const { id: conversationId } = useParams();
    const toast = useToast();
    const [showEmojis, setShowEmojis] = useState<boolean>(false);
+   const [showModalUsersReaction, setShowModalUsersReaction] =
+      useState<boolean>(false);
    const itMe = useMemo(() => {
       return authCtx?.user?.uid === message.senderId;
    }, [authCtx?.user?.uid, message.senderId]);
@@ -97,7 +101,7 @@ const Message: React.FC<Props> = ({ message, onChooseMessage }) => {
                );
             case 'IMAGE':
                return (
-                  <div className="min-w-[270px] max-w-[26rem] outline-hidden mb-[10px] ">
+                  <div className=" min-w-[200px] max-w-[15rem]  outline-hidden mb-[10px] md:min-w-[270px] md:max-w-[26rem]">
                      <img
                         src={message.content}
                         alt=""
@@ -188,8 +192,10 @@ const Message: React.FC<Props> = ({ message, onChooseMessage }) => {
 
             for (const reaction of message.reactions) {
                if (
-                  reaction.icon === icon &&
-                  reaction.userId === authCtx?.user?.uid
+                  !(
+                     reaction.icon === icon &&
+                     reaction.userId === authCtx?.user?.uid
+                  )
                ) {
                   newReactions.push(reaction);
                }
@@ -201,7 +207,7 @@ const Message: React.FC<Props> = ({ message, onChooseMessage }) => {
             return;
          }
          if (diffIconWithUser) {
-            console.log('iconAlreadyExistWithUser');
+            console.log('diffIconWithUser');
             await updateDoc(messageRef, {
                reactions: message.reactions.map((reaction) => {
                   if (reaction.userId === authCtx?.user?.uid) {
@@ -228,64 +234,14 @@ const Message: React.FC<Props> = ({ message, onChooseMessage }) => {
    );
 
    const renderEmojisReacted = useCallback(() => {
-      const renderReaction = (reaction: IReact) => {
-         switch (reaction.icon) {
-            case 'ANGRY':
-               return (
-                  <img
-                     className="w-full h-full object-cover"
-                     src={EMOJI_OBJ.angry}
-                     alt=""
-                  />
-               );
-            case 'HAHA':
-               return (
-                  <img
-                     className="w-full h-full object-cover"
-                     src={EMOJI_OBJ.haha}
-                     alt=""
-                  />
-               );
-            case 'HEART':
-               return (
-                  <img
-                     className="w-full h-full object-cover"
-                     src={EMOJI_OBJ.heart}
-                     alt=""
-                  />
-               );
-            case 'LIKE':
-               return (
-                  <img
-                     className="w-full h-full object-cover"
-                     src={EMOJI_OBJ.like}
-                     alt=""
-                  />
-               );
-            case 'SAD':
-               return (
-                  <img
-                     className="w-full h-full object-cover"
-                     src={EMOJI_OBJ.sad}
-                     alt=""
-                  />
-               );
-            case 'WOW':
-               return (
-                  <img
-                     className="w-full h-full object-cover"
-                     src={EMOJI_OBJ.wow}
-                     alt=""
-                  />
-               );
-            default:
-               return null;
-         }
-      };
-
       return (
          message.reactions.length > 0 && (
-            <div className="absolute right-0 bottom-0 flex items-center gap-1 bg-white shadow px-2 py-1 rounded">
+            <div
+               className="absolute right-0 bottom-0 flex items-center gap-1 bg-white shadow px-2 py-1 rounded cursor-pointer"
+               onClick={() => {
+                  setShowModalUsersReaction(true);
+               }}
+            >
                <span className="h-4 w-4 flex items-center justify-center">
                   {message.reactions.length}
                </span>
@@ -341,134 +297,146 @@ const Message: React.FC<Props> = ({ message, onChooseMessage }) => {
    }
 
    return (
-      <div
-         className={`${cx('message', {
-            right: itMe,
-         })} group message-${message.id} select-none`}
-      >
-         {loading ? (
-            <Skeleton className={cx('avatar')} circle />
-         ) : (
-            <Avatar
-               className={cx('avatar')}
-               src={user?.avatar as string}
-               alt={user?.username as string}
-            />
-         )}
-         <div className="flex flex-col ">
-            <Tippy
-               placement="top-end"
-               onClickOutside={() => {
-                  setShowEmojis(false);
-               }}
-               interactive={true}
-               visible={showEmojis}
-               render={(attrs) => {
-                  return (
-                     <ul
-                        tabIndex={-1}
-                        {...attrs}
-                        className="flex items-center gap-2 bg-white shadow p-2 rounded"
-                     >
-                        {EMOJIS.map((emoji) => (
-                           <li
-                              key={emoji.id}
-                              className="w-8 h-8 cursor-pointer"
-                              onClick={() => {
-                                 handleReactionMessage(emoji.name);
-                                 setShowEmojis(false);
-                              }}
-                           >
-                              <img
-                                 src={emoji.icon}
-                                 alt={emoji.name}
-                                 className="w-full h-full object-cover"
-                              />
-                           </li>
-                        ))}
-                     </ul>
-                  );
-               }}
-            >
-               <div className="relative">
-                  {renderEmojisReacted()}
-                  {renderReplyMessage()}
-               </div>
-            </Tippy>
-            <div className={cx('info')}>
-               <span className="font-base font-semibold text-black">
-                  {user?.username}
-               </span>
-               <span>
-                  {new Date(message.createdAt).toLocaleString('en-US', {
-                     hour: 'numeric',
-                     minute: 'numeric',
-                     hour12: true,
-                     day: '2-digit',
-                     month: '2-digit',
-                     year: 'numeric',
-                  })}
-               </span>
-            </div>
-         </div>
-         <div className="self-start opacity-0 group-hover:opacity-100 transition-all">
-            <div className="flex items-center gap-2">
+      <>
+         <div
+            className={`${cx('message', {
+               right: itMe,
+            })} group message-${message.id} select-none`}
+         >
+            {loading ? (
+               <Skeleton className={cx('avatar')} circle />
+            ) : (
+               <Avatar
+                  className={cx('avatar')}
+                  src={user?.avatar as string}
+                  alt={user?.username as string}
+               />
+            )}
+            <div className="flex flex-col ">
                <Tippy
+                  placement="top-end"
                   onClickOutside={() => {
-                     setShowMore(false);
+                     setShowEmojis(false);
                   }}
                   interactive={true}
-                  visible={showMore}
-                  render={(attrs) => (
-                     <div className="box" tabIndex={-1} {...attrs}>
-                        <Dropdown>
-                           <DropdownItem
-                              onClick={() => {
-                                 onChooseMessage(message);
-                                 setShowMore(false);
-                              }}
-                           >
-                              <span>Reply</span>
-                              <BsFillReplyFill className="w-4 h-4 flex-shrink-0 text-[#797c8c]" />
-                           </DropdownItem>
-                           {!message.isUnsent && message.type === 'TEXT' && (
-                              <DropdownItem onClick={handleCopyMessage}>
-                                 <span>Copy</span>
-                                 <BiCopy className="w-4 h-4 flex-shrink-0 text-[#797c8c]" />
+                  visible={showEmojis}
+                  render={(attrs) => {
+                     return (
+                        <ul
+                           tabIndex={-1}
+                           {...attrs}
+                           className="flex items-center gap-2 bg-white shadow p-2 rounded"
+                        >
+                           {EMOJIS.map((emoji) => (
+                              <li
+                                 key={emoji.id}
+                                 className="w-8 h-8 cursor-pointer"
+                                 onClick={() => {
+                                    handleReactionMessage(emoji.name);
+                                    setShowEmojis(false);
+                                 }}
+                              >
+                                 <img
+                                    src={emoji.icon}
+                                    alt={emoji.name}
+                                    className="w-full h-full object-cover"
+                                 />
+                              </li>
+                           ))}
+                        </ul>
+                     );
+                  }}
+               >
+                  <div className="relative">
+                     {renderEmojisReacted()}
+                     {renderReplyMessage()}
+                  </div>
+               </Tippy>
+               <div className={cx('info')}>
+                  <span className="font-base font-semibold text-black">
+                     {user?.username}
+                  </span>
+                  <span>
+                     {new Date(message.createdAt).toLocaleString('en-US', {
+                        hour: 'numeric',
+                        minute: 'numeric',
+                        hour12: true,
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric',
+                     })}
+                  </span>
+               </div>
+            </div>
+            <div className="self-start opacity-0 group-hover:opacity-100 transition-all">
+               <div className="flex items-center gap-2">
+                  <Tippy
+                     onClickOutside={() => {
+                        setShowMore(false);
+                     }}
+                     interactive={true}
+                     visible={showMore}
+                     render={(attrs) => (
+                        <div className="box" tabIndex={-1} {...attrs}>
+                           <Dropdown>
+                              <DropdownItem
+                                 onClick={() => {
+                                    onChooseMessage(message);
+                                    setShowMore(false);
+                                 }}
+                              >
+                                 <span>Reply</span>
+                                 <BsFillReplyFill className="w-4 h-4 flex-shrink-0 text-[#797c8c]" />
                               </DropdownItem>
-                           )}
-
-                           {!message.isUnsent &&
-                              authCtx?.user?.uid === message.senderId && (
-                                 <DropdownItem onClick={handelUnsent}>
-                                    <span>Unsent</span>
-                                    <BiHide className="w-4 h-4 flex-shrink-0 text-[#797c8c]" />
+                              {!message.isUnsent && message.type === 'TEXT' && (
+                                 <DropdownItem onClick={handleCopyMessage}>
+                                    <span>Copy</span>
+                                    <BiCopy className="w-4 h-4 flex-shrink-0 text-[#797c8c]" />
                                  </DropdownItem>
                               )}
-                        </Dropdown>
-                     </div>
-                  )}
-               >
+
+                              {!message.isUnsent &&
+                                 authCtx?.user?.uid === message.senderId && (
+                                    <DropdownItem onClick={handelUnsent}>
+                                       <span>Unsent</span>
+                                       <BiHide className="w-4 h-4 flex-shrink-0 text-[#797c8c]" />
+                                    </DropdownItem>
+                                 )}
+                           </Dropdown>
+                        </div>
+                     )}
+                  >
+                     <button
+                        className="w-8 h-8 flex items-center justify-center"
+                        onClick={() => {
+                           setShowMore(!showMore);
+                        }}
+                     >
+                        <BiDotsVerticalRounded className="w-5 h-5" />
+                     </button>
+                  </Tippy>
                   <button
                      className="w-8 h-8 flex items-center justify-center"
                      onClick={() => {
-                        setShowMore(!showMore);
+                        setShowEmojis(!showEmojis);
                      }}
                   >
-                     <BiDotsVerticalRounded className="w-5 h-5" />
+                     <HiOutlineEmojiHappy className="w-5 h-5" />
                   </button>
-               </Tippy>
-               <button
-                  className="w-8 h-8 flex items-center justify-center"
-                  onClick={() => {
-                     setShowEmojis(!showEmojis);
-                  }}
-               >
-                  <HiOutlineEmojiHappy className="w-5 h-5" />
-               </button>
+               </div>
             </div>
          </div>
-      </div>
+         <AnimatePresence>
+            {showModalUsersReaction && (
+               <ModalSeeUserReaction
+                  onClose={() => {
+                     setShowModalUsersReaction(false);
+                  }}
+                  reactions={message.reactions}
+               />
+            )}
+         </AnimatePresence>
+      </>
    );
 };
 

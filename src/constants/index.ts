@@ -120,3 +120,7 @@ export const EMOJIS: Array<{
       icon: EMOJI_OBJ.like,
    },
 ];
+
+export const BREAK_POINT = {
+   Desktops: 1024,
+};
